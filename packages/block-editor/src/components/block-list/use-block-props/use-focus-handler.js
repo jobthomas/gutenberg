@@ -9,6 +9,7 @@ import { useRefEffect } from '@wordpress/compose';
  */
 import { isInsideRootBlock } from '../../../utils/dom';
 import { store as blockEditorStore } from '../../../store';
+import { unlock } from '../../../lock-unlock';
 
 /**
  * Selects the block if it receives focus.
@@ -18,6 +19,26 @@ import { store as blockEditorStore } from '../../../store';
 export function useFocusHandler( clientId ) {
 	const { isBlockSelected } = useSelect( blockEditorStore );
 	const { selectBlock, selectionChange } = useDispatch( blockEditorStore );
+	const { stopEditingContentOnlySection } = unlock(
+		useDispatch( blockEditorStore )
+	);
+	const { editedSection, isWithinEditedSection } = useSelect(
+		( select ) => {
+			const {
+				getEditedContentOnlySection,
+				isWithinEditedContentOnlySection,
+			} = unlock( select( blockEditorStore ) );
+			const editedContentOnlySection = getEditedContentOnlySection();
+
+			return {
+				editedSection: editedContentOnlySection,
+				isWithinEditedSection: editedContentOnlySection
+					? isWithinEditedContentOnlySection( clientId )
+					: false,
+			};
+		},
+		[ clientId ]
+	);
 
 	return useRefEffect(
 		( node ) => {
@@ -54,6 +75,13 @@ export function useFocusHandler( clientId ) {
 					return;
 				}
 
+				// If we're in spotlight mode and clicking outside the edited section,
+				// exit spotlight mode instead of selecting the block.
+				if ( editedSection && ! isWithinEditedSection ) {
+					stopEditingContentOnlySection();
+					return;
+				}
+
 				selectBlock( clientId );
 			}
 
@@ -63,6 +91,12 @@ export function useFocusHandler( clientId ) {
 				node.removeEventListener( 'focusin', onFocus );
 			};
 		},
-		[ isBlockSelected, selectBlock ]
+		[
+			isBlockSelected,
+			selectBlock,
+			editedSection,
+			isWithinEditedSection,
+			stopEditingContentOnlySection,
+		]
 	);
 }
