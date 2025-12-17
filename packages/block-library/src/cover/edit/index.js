@@ -109,6 +109,7 @@ function CoverEdit( {
 		isUserOverlayColor,
 		sizeSlug,
 		poster,
+		metadata,
 	} = attributes;
 
 	const [ featuredImage ] = useEntityProp(
@@ -175,6 +176,22 @@ function CoverEdit( {
 		} )();
 		// Update the block only when the featured image changes.
 	}, [ mediaUrl ] );
+
+	const hasImageBinding = !! metadata?.bindings?.url;
+
+	useEffect( () => {
+		/**
+		 * If the cover URL is bound (block bindings), disable `useFeaturedImage`
+		 * and set `dimRatio` to 50. Otherwise, with no media selected,
+		 * `dimRatio` defaults to 100 and the overlay fully obscures the image.
+		 */
+		if ( hasImageBinding ) {
+			setAttributes( { useFeaturedImage: false } );
+		}
+		if ( hasImageBinding && dimRatio === 100 ) {
+			setAttributes( { dimRatio: 50 } );
+		}
+	}, [ originalUrl, hasImageBinding, dimRatio, setAttributes ] );
 
 	// instead of destructuring the attributes
 	// we define the url and background type

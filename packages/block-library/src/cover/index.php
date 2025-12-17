@@ -6,6 +6,25 @@
  */
 
 /**
+ * Inserts image HTML before the inner container div.
+ *
+ * @since 6.9.0
+ *
+ * @param string $content The block content.
+ * @param string $image   The image HTML to insert.
+ *
+ * @return string The modified content.
+ */
+function insert_cover_image_before_inner_container( $content, $image ) {
+	$inner_container_start = '/<div\b[^>]+wp-block-cover__inner-container[\s|"][^>]*>/U';
+	if ( 1 === preg_match( $inner_container_start, $content, $matches, PREG_OFFSET_CAPTURE ) ) {
+		$offset  = $matches[0][1];
+		$content = substr( $content, 0, $offset ) . $image . substr( $content, $offset );
+	}
+	return $content;
+}
+
+/**
  * Renders the `core/cover` block on server.
  *
  * @since 6.0.0
@@ -122,13 +141,59 @@ function render_block_core_cover( $attributes, $content ) {
 		return $content;
 	}
 
-	if ( 'image' !== $attributes['backgroundType'] || false === $attributes['useFeaturedImage'] ) {
+	$has_url_binding = isset( $attributes['metadata']['bindings']['url'] ) && isset( $attributes['url'] );
+
+	if ( 'image' !== $attributes['backgroundType'] || ( false === $attributes['useFeaturedImage'] && ! $has_url_binding ) ) {
 		return $content;
 	}
 
 	$object_position = isset( $attributes['focalPoint'] )
 		? round( $attributes['focalPoint']['x'] * 100 ) . '% ' . round( $attributes['focalPoint']['y'] * 100 ) . '%'
 		: null;
+
+	if ( $has_url_binding ) {
+		if ( ! ( $attributes['hasParallax'] || $attributes['isRepeated'] ) ) {
+			// Use an img tag when parallax and repeated are not set.
+			$attr = array(
+				'class'           => 'wp-block-cover__image-background',
+				'alt'             => '',
+				'src'             => $attributes['url'],
+				'data-object-fit' => 'cover',
+			);
+
+			if ( $object_position ) {
+				$attr['data-object-position'] = $object_position;
+				$attr['style']                = 'object-position:' . $object_position . ';';
+			}
+
+			$image = '<img';
+			foreach ( $attr as $name => $value ) {
+				$image .= ' ' . $name . '="' . esc_attr( $value ) . '"';
+			}
+			$image .= '>';
+		} else {
+			// Use a div with background image when parallax or repeated is set.
+			$processor = new WP_HTML_Tag_Processor( '<div></div>' );
+			$processor->next_tag();
+
+			$processor->add_class( 'wp-block-cover__image-background' );
+
+			if ( $attributes['hasParallax'] ) {
+				$processor->add_class( 'has-parallax' );
+			}
+			if ( $attributes['isRepeated'] ) {
+				$processor->add_class( 'is-repeated' );
+			}
+
+			$styles  = 'background-position:' . ( $object_position ?? '50% 50%' ) . ';';
+			$styles .= 'background-image:url(' . esc_url( $attributes['url'] ) . ');';
+			$processor->set_attribute( 'style', $styles );
+
+			$image = $processor->get_updated_html();
+		}
+
+		return insert_cover_image_before_inner_container( $content, $image );
+	}
 
 	if ( ! ( $attributes['hasParallax'] || $attributes['isRepeated'] ) ) {
 		$attr = array(
@@ -182,13 +247,7 @@ function render_block_core_cover( $attributes, $content ) {
 	 * Inserts the featured image between the (1st) cover 'background' `span` and 'inner_container' `div`,
 	 * and removes eventual whitespace characters between the two (typically introduced at template level)
 	 */
-	$inner_container_start = '/<div\b[^>]+wp-block-cover__inner-container[\s|"][^>]*>/U';
-	if ( 1 === preg_match( $inner_container_start, $content, $matches, PREG_OFFSET_CAPTURE ) ) {
-		$offset  = $matches[0][1];
-		$content = substr( $content, 0, $offset ) . $image . substr( $content, $offset );
-	}
-
-	return $content;
+	return insert_cover_image_before_inner_container( $content, $image );
 }
 
 /**
