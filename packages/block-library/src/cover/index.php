@@ -152,7 +152,10 @@ function render_block_core_cover( $attributes, $content ) {
 		: null;
 
 	if ( $has_url_binding ) {
-		if ( ! ( $attributes['hasParallax'] || $attributes['isRepeated'] ) ) {
+		$has_parallax  = ! empty( $attributes['hasParallax'] );
+		$is_repeated   = ! empty( $attributes['isRepeated'] );
+
+		if ( ! ( $has_parallax || $is_repeated ) ) {
 			// Use an img tag when parallax and repeated are not set.
 			$attr = array(
 				'class'           => 'wp-block-cover__image-background',
@@ -178,10 +181,10 @@ function render_block_core_cover( $attributes, $content ) {
 
 			$processor->add_class( 'wp-block-cover__image-background' );
 
-			if ( $attributes['hasParallax'] ) {
+			if ( $has_parallax ) {
 				$processor->add_class( 'has-parallax' );
 			}
-			if ( $attributes['isRepeated'] ) {
+			if ( $is_repeated ) {
 				$processor->add_class( 'is-repeated' );
 			}
 
