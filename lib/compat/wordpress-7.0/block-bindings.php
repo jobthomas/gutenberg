@@ -1,8 +1,8 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName // Needed for WP_Block_Context_Extractor helper class.
+<?php
 /**
  * Block Bindings: Support for generically setting rich-text block attributes.
  *
- * @since 6.9.0
+ * @since 7.0
  * @package gutenberg
  * @subpackage Block Bindings
  */
