@@ -15,7 +15,7 @@
  *
  * @return string The modified content.
  */
-function insert_cover_image_before_inner_container( $content, $image ) {
+function block_core_cover_insert_image_before_inner_container( $content, $image ) {
 	$inner_container_start = '/<div\b[^>]+wp-block-cover__inner-container[\s|"][^>]*>/U';
 	if ( 1 === preg_match( $inner_container_start, $content, $matches, PREG_OFFSET_CAPTURE ) ) {
 		$offset  = $matches[0][1];
@@ -195,7 +195,7 @@ function render_block_core_cover( $attributes, $content ) {
 			$image = $processor->get_updated_html();
 		}
 
-		return insert_cover_image_before_inner_container( $content, $image );
+		return block_core_cover_insert_image_before_inner_container( $content, $image );
 	}
 
 	if ( ! ( $attributes['hasParallax'] || $attributes['isRepeated'] ) ) {
@@ -250,7 +250,7 @@ function render_block_core_cover( $attributes, $content ) {
 	 * Inserts the featured image between the (1st) cover 'background' `span` and 'inner_container' `div`,
 	 * and removes eventual whitespace characters between the two (typically introduced at template level)
 	 */
-	return insert_cover_image_before_inner_container( $content, $image );
+	return block_core_cover_insert_image_before_inner_container( $content, $image );
 }
 
 /**
