@@ -197,6 +197,9 @@ require __DIR__ . '/block-supports/aria-label.php';
 require __DIR__ . '/block-supports/anchor.php';
 require __DIR__ . '/block-supports/block-visibility.php';
 
+// New core abilities.
+require __DIR__ . '/abilities.php';
+
 // Client-side media processing.
 if ( gutenberg_is_experiment_enabled( 'gutenberg-media-processing' ) ) {
 	require_once __DIR__ . '/experimental/media/load.php';
