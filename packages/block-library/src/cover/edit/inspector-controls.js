@@ -99,6 +99,7 @@ export default function CoverInspectorControls( {
 	currentSettings,
 	updateDimRatio,
 	featuredImage,
+	hasImageBinding,
 } ) {
 	const {
 		useFeaturedImage,
@@ -231,22 +232,26 @@ export default function CoverInspectorControls( {
 									/>
 								</ToolsPanelItem>
 
-								<ToolsPanelItem
-									label={ __( 'Repeated background' ) }
-									isShownByDefault
-									hasValue={ () => isRepeated }
-									onDeselect={ () =>
-										setAttributes( {
-											isRepeated: false,
-										} )
-									}
-								>
-									<ToggleControl
+								{ ! hasImageBinding && (
+									<ToolsPanelItem
 										label={ __( 'Repeated background' ) }
-										checked={ isRepeated }
-										onChange={ toggleIsRepeated }
-									/>
-								</ToolsPanelItem>
+										isShownByDefault
+										hasValue={ () => isRepeated }
+										onDeselect={ () =>
+											setAttributes( {
+												isRepeated: false,
+											} )
+										}
+									>
+										<ToggleControl
+											label={ __(
+												'Repeated background'
+											) }
+											checked={ isRepeated }
+											onChange={ toggleIsRepeated }
+										/>
+									</ToolsPanelItem>
+								) }
 							</>
 						) }
 						{ showFocalPointPicker && (

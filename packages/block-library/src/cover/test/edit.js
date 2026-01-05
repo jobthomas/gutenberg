@@ -233,6 +233,27 @@ describe( 'Cover block', () => {
 			);
 		} );
 
+		test( 'hides repeated background toggle when media is bound', async () => {
+			await setup( {
+				url: 'http://localhost/my-image.jpg',
+				metadata: {
+					bindings: {
+						url: {
+							source: 'core/post-meta',
+							args: { key: 'cover_image' },
+						},
+					},
+				},
+			} );
+
+			await selectBlock( 'Block: Cover' );
+			await screen.findByLabelText( 'Fixed background' );
+
+			expect(
+				screen.queryByLabelText( 'Repeated background' )
+			).not.toBeInTheDocument();
+		} );
+
 		test( 'sets left focalPoint attribute when focal point values changed', async () => {
 			await setup( {
 				url: 'http://localhost/my-image.jpg',
