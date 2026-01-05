@@ -32,6 +32,7 @@ export default function CoverBlockControls( {
 	onClearMedia,
 	onSelectEmbedUrl,
 	blockEditingMode,
+	hasImageBinding,
 } ) {
 	const { contentPosition, id, useFeaturedImage, minHeight, minHeightUnit } =
 		attributes;
@@ -102,31 +103,33 @@ export default function CoverBlockControls( {
 					/>
 				</BlockControls>
 			) }
-			<BlockControls group="other">
-				<MediaReplaceFlow
-					mediaId={ id }
-					mediaURL={ url }
-					allowedTypes={ ALLOWED_MEDIA_TYPES }
-					onSelect={ onSelectMedia }
-					onToggleFeaturedImage={ toggleUseFeaturedImage }
-					useFeaturedImage={ useFeaturedImage }
-					name={ ! url ? __( 'Add media' ) : __( 'Replace' ) }
-					onReset={ onClearMedia }
-					variant="toolbar"
-				>
-					{ ( { onClose } ) => (
-						<MenuItem
-							icon={ link }
-							onClick={ () => {
-								setIsEmbedUrlInputOpen( true );
-								onClose();
-							} }
-						>
-							{ __( 'Embed video from URL' ) }
-						</MenuItem>
-					) }
-				</MediaReplaceFlow>
-			</BlockControls>
+			{ ! hasImageBinding && (
+				<BlockControls group="other">
+					<MediaReplaceFlow
+						mediaId={ id }
+						mediaURL={ url }
+						allowedTypes={ ALLOWED_MEDIA_TYPES }
+						onSelect={ onSelectMedia }
+						onToggleFeaturedImage={ toggleUseFeaturedImage }
+						useFeaturedImage={ useFeaturedImage }
+						name={ ! url ? __( 'Add media' ) : __( 'Replace' ) }
+						onReset={ onClearMedia }
+						variant="toolbar"
+					>
+						{ ( { onClose } ) => (
+							<MenuItem
+								icon={ link }
+								onClick={ () => {
+									setIsEmbedUrlInputOpen( true );
+									onClose();
+								} }
+							>
+								{ __( 'Embed video from URL' ) }
+							</MenuItem>
+						) }
+					</MediaReplaceFlow>
+				</BlockControls>
+			) }
 			{ isEmbedUrlInputOpen && (
 				<EmbedVideoUrlInput
 					onSubmit={ ( embedUrl ) => {

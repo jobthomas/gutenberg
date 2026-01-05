@@ -177,6 +177,26 @@ describe( 'Cover block', () => {
 				)
 			).not.toBeInTheDocument();
 		} );
+
+		test( 'hides replace button when media is bound', async () => {
+			await setup( {
+				url: 'http://localhost/my-image.jpg',
+				metadata: {
+					bindings: {
+						url: {
+							source: 'core/post-meta',
+							args: { key: 'cover_image' },
+						},
+					},
+				},
+			} );
+
+			await selectBlock( 'Block: Cover' );
+
+			expect(
+				screen.queryByRole( 'button', { name: 'Replace' } )
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'Inspector controls', () => {

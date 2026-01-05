@@ -152,8 +152,8 @@ function render_block_core_cover( $attributes, $content ) {
 		: null;
 
 	if ( $has_url_binding ) {
-		$has_parallax  = ! empty( $attributes['hasParallax'] );
-		$is_repeated   = ! empty( $attributes['isRepeated'] );
+		$has_parallax = ! empty( $attributes['hasParallax'] );
+		$is_repeated  = ! empty( $attributes['isRepeated'] );
 
 		if ( ! ( $has_parallax || $is_repeated ) ) {
 			// Use an img tag when parallax and repeated are not set.
