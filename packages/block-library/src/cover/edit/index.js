@@ -120,8 +120,11 @@ function CoverEdit( {
 	);
 	const { getSettings } = useSelect( blockEditorStore );
 
-	const { __unstableMarkNextChangeAsNotPersistent } =
-		useDispatch( blockEditorStore );
+	const {
+		__unstableMarkNextChangeAsNotPersistent,
+		__unstableMarkLastChangeAsPersistent,
+		updateBlockAttributes,
+	} = useDispatch( blockEditorStore );
 	const { media } = useSelect(
 		( select ) => {
 			return {
@@ -143,6 +146,26 @@ function CoverEdit( {
 	const mediaUrl =
 		media?.media_details?.sizes?.[ sizeSlug ]?.source_url ??
 		media?.source_url;
+
+	const { patternClientId, patternOverrides } = useSelect(
+		( select ) => {
+			const { getBlockAttributes, getBlockParentsByBlockName } =
+				select( blockEditorStore );
+			const [ parentPatternId ] = getBlockParentsByBlockName(
+				clientId,
+				'core/block',
+				true
+			);
+
+			return {
+				patternClientId: parentPatternId,
+				patternOverrides:
+					parentPatternId &&
+					getBlockAttributes( parentPatternId )?.content,
+			};
+		},
+		[ clientId ]
+	);
 
 	// User can change the featured image outside of the block, but we still
 	// need to update the block when that happens. This effect should only
@@ -278,6 +301,34 @@ function CoverEdit( {
 	};
 
 	const onClearMedia = () => {
+		// Handle pattern overrides removal.
+		const hasPatternOverride =
+			metadata?.bindings?.__default?.source === 'core/pattern-overrides';
+		const blockName = metadata?.name;
+
+		if ( hasPatternOverride && blockName && patternClientId ) {
+			const overrides = patternOverrides ?? {};
+			if (
+				overrides[ blockName ] &&
+				Object.prototype.hasOwnProperty.call(
+					overrides[ blockName ],
+					'url'
+				)
+			) {
+				__unstableMarkLastChangeAsPersistent();
+
+				const newOverrides = { ...overrides };
+				delete newOverrides[ blockName ];
+
+				updateBlockAttributes( patternClientId, {
+					content: Object.keys( newOverrides ).length
+						? newOverrides
+						: undefined,
+				} );
+				return; // Exit early, don't clear the url attribute
+			}
+		}
+
 		let newOverlayColor = overlayColor.color;
 		if ( ! isUserOverlayColor ) {
 			newOverlayColor = DEFAULT_OVERLAY_COLOR;
