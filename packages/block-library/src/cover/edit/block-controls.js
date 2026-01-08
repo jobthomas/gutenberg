@@ -33,6 +33,7 @@ export default function CoverBlockControls( {
 	onSelectEmbedUrl,
 	blockEditingMode,
 	hasImageBinding,
+	shouldHideReset,
 } ) {
 	const { contentPosition, id, useFeaturedImage, minHeight, minHeightUnit } =
 		attributes;
@@ -113,7 +114,7 @@ export default function CoverBlockControls( {
 						onToggleFeaturedImage={ toggleUseFeaturedImage }
 						useFeaturedImage={ useFeaturedImage }
 						name={ ! url ? __( 'Add media' ) : __( 'Replace' ) }
-						onReset={ onClearMedia }
+						onReset={ shouldHideReset ? undefined : onClearMedia }
 						variant="toolbar"
 					>
 						{ ( { onClose } ) => (

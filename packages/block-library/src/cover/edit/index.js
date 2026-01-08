@@ -579,6 +579,22 @@ function CoverEdit( {
 		} );
 	};
 
+	// Determine if we should hide the reset option
+	// Hide reset when: in a pattern but no url override (default pattern)
+	// Show reset when: not in a pattern, OR in a pattern with url override
+	const hasPatternOverride =
+		metadata?.bindings?.__default?.source === 'core/pattern-overrides';
+	const blockName = metadata?.name;
+	const isInPattern = hasPatternOverride && blockName && patternClientId;
+	const hasUrlOverrideInPattern =
+		isInPattern &&
+		patternOverrides?.[ blockName ] &&
+		Object.prototype.hasOwnProperty.call(
+			patternOverrides[ blockName ],
+			'url'
+		);
+	const shouldHideReset = isInPattern && ! hasUrlOverrideInPattern;
+
 	const blockControls = (
 		<CoverBlockControls
 			attributes={ attributes }
@@ -590,6 +606,7 @@ function CoverEdit( {
 			onClearMedia={ onClearMedia }
 			blockEditingMode={ blockEditingMode }
 			hasImageBinding={ hasImageBinding }
+			shouldHideReset={ shouldHideReset }
 		/>
 	);
 
