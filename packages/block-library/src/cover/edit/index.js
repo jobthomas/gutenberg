@@ -201,6 +201,7 @@ function CoverEdit( {
 	}, [ mediaUrl ] );
 
 	const hasImageBinding = !! metadata?.bindings?.url;
+	const dimRatioInitialized = useRef( false );
 
 	useEffect( () => {
 		/**
@@ -211,10 +212,65 @@ function CoverEdit( {
 		if ( hasImageBinding ) {
 			setAttributes( { useFeaturedImage: false } );
 		}
-		if ( hasImageBinding && dimRatio === 100 ) {
+		// Only set dimRatio to 50 once when binding is first detected with dimRatio at 100
+		// This prevents blocking users from manually setting dimRatio to 100 later
+		if (
+			hasImageBinding &&
+			dimRatio === 100 &&
+			! dimRatioInitialized.current
+		) {
 			setAttributes( { dimRatio: 50 } );
+			dimRatioInitialized.current = true;
 		}
-	}, [ originalUrl, hasImageBinding, dimRatio, setAttributes ] );
+		// Reset the flag when binding is removed
+		if ( ! hasImageBinding ) {
+			dimRatioInitialized.current = false;
+		}
+		// Set backgroundType to image when URL binding provides a URL
+		if ( hasImageBinding && originalUrl && ! originalBackgroundType ) {
+			setAttributes( { backgroundType: IMAGE_BACKGROUND_TYPE } );
+		}
+	}, [
+		originalUrl,
+		hasImageBinding,
+		dimRatio,
+		originalBackgroundType,
+		setAttributes,
+	] );
+
+	// Update overlay color when URL comes from binding
+	useEffect( () => {
+		( async () => {
+			if ( ! hasImageBinding || ! originalUrl || isUserOverlayColor ) {
+				return;
+			}
+
+			const averageBackgroundColor = await getMediaColor( originalUrl );
+
+			let newOverlayColor = averageBackgroundColor;
+			__unstableMarkNextChangeAsNotPersistent();
+			setOverlayColor( newOverlayColor );
+
+			const newIsDark = compositeIsDark(
+				dimRatio,
+				newOverlayColor,
+				averageBackgroundColor
+			);
+			__unstableMarkNextChangeAsNotPersistent();
+			setAttributes( {
+				isDark: newIsDark,
+				isUserOverlayColor: isUserOverlayColor || false,
+			} );
+		} )();
+	}, [
+		originalUrl,
+		hasImageBinding,
+		isUserOverlayColor,
+		dimRatio,
+		setOverlayColor,
+		setAttributes,
+		__unstableMarkNextChangeAsNotPersistent,
+	] );
 
 	// instead of destructuring the attributes
 	// we define the url and background type
