@@ -7,7 +7,7 @@ import clsx from 'clsx';
  * WordPress dependencies
  */
 import { useEntityProp, store as coreStore } from '@wordpress/core-data';
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { Placeholder, Spinner } from '@wordpress/components';
 import { compose, useResizeObserver } from '@wordpress/compose';
 import {
@@ -201,7 +201,7 @@ function CoverEdit( {
 	}, [ mediaUrl ] );
 
 	const hasImageBinding = !! metadata?.bindings?.url;
-	const dimRatioInitialized = useRef( false );
+	const [ dimRatioInitialized, setDimRatioInitialized ] = useState( false );
 
 	useEffect( () => {
 		/**
@@ -214,17 +214,13 @@ function CoverEdit( {
 		}
 		// Only set dimRatio to 50 once when binding is first detected with dimRatio at 100
 		// This prevents blocking users from manually setting dimRatio to 100 later
-		if (
-			hasImageBinding &&
-			dimRatio === 100 &&
-			! dimRatioInitialized.current
-		) {
+		if ( hasImageBinding && dimRatio === 100 && ! dimRatioInitialized ) {
 			setAttributes( { dimRatio: 50 } );
-			dimRatioInitialized.current = true;
+			setDimRatioInitialized( true );
 		}
 		// Reset the flag when binding is removed
 		if ( ! hasImageBinding ) {
-			dimRatioInitialized.current = false;
+			setDimRatioInitialized( false );
 		}
 		// Set backgroundType to image when URL binding provides a URL
 		if ( hasImageBinding && originalUrl && ! originalBackgroundType ) {
@@ -234,6 +230,7 @@ function CoverEdit( {
 		originalUrl,
 		hasImageBinding,
 		dimRatio,
+		dimRatioInitialized,
 		originalBackgroundType,
 		setAttributes,
 	] );
@@ -247,7 +244,7 @@ function CoverEdit( {
 
 			const averageBackgroundColor = await getMediaColor( originalUrl );
 
-			let newOverlayColor = averageBackgroundColor;
+			const newOverlayColor = averageBackgroundColor;
 			__unstableMarkNextChangeAsNotPersistent();
 			setOverlayColor( newOverlayColor );
 
