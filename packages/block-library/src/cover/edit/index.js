@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { isBlobURL } from '@wordpress/blob';
 import { store as noticesStore } from '@wordpress/notices';
+import { getBlockBindingsSource } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -175,6 +176,28 @@ function CoverEdit( {
 
 	const hasImageBinding = !! metadata?.bindings?.url;
 	const [ dimRatioInitialized, setDimRatioInitialized ] = useState( false );
+
+	const { lockUrlControls = false } = useSelect(
+		( select ) => {
+			if ( ! isSelected ) {
+				return {};
+			}
+			const { url: urlBinding } = metadata?.bindings || {};
+			const urlBindingSource = getBlockBindingsSource(
+				urlBinding?.source
+			);
+			return {
+				lockUrlControls:
+					!! urlBinding &&
+					! urlBindingSource?.canUserEditValue?.( {
+						select,
+						context: { postId, postType },
+						args: urlBinding?.args,
+					} ),
+			};
+		},
+		[ isSelected, metadata?.bindings, postId, postType ]
+	);
 
 	// Shared logic for updating overlay color based on image's average color.
 	// Used by both featured image and bound URL effects below.
@@ -632,6 +655,7 @@ function CoverEdit( {
 			onClearMedia={ onClearMedia }
 			blockEditingMode={ blockEditingMode }
 			hasImageBinding={ hasImageBinding }
+			lockUrlControls={ lockUrlControls }
 		/>
 	);
 
