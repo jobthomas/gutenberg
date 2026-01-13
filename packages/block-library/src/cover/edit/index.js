@@ -7,7 +7,13 @@ import clsx from 'clsx';
  * WordPress dependencies
  */
 import { useEntityProp, store as coreStore } from '@wordpress/core-data';
-import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
+import {
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useCallback,
+} from '@wordpress/element';
 import { Placeholder, Spinner } from '@wordpress/components';
 import { compose, useResizeObserver } from '@wordpress/compose';
 import {
@@ -167,17 +173,18 @@ function CoverEdit( {
 		[ clientId ]
 	);
 
-	// User can change the featured image outside of the block, but we still
-	// need to update the block when that happens. This effect should only
-	// run when the featured image changes in that case. All other cases are
-	// handled in their respective callbacks.
-	useEffect( () => {
-		( async () => {
-			if ( ! useFeaturedImage ) {
+	const hasImageBinding = !! metadata?.bindings?.url;
+	const [ dimRatioInitialized, setDimRatioInitialized ] = useState( false );
+
+	// Shared logic for updating overlay color based on image's average color.
+	// Used by both featured image and bound URL effects below.
+	const updateOverlayFromImage = useCallback(
+		async ( imageUrl ) => {
+			if ( ! imageUrl || isUserOverlayColor ) {
 				return;
 			}
 
-			const averageBackgroundColor = await getMediaColor( mediaUrl );
+			const averageBackgroundColor = await getMediaColor( imageUrl );
 
 			let newOverlayColor = overlayColor.color;
 			if ( ! isUserOverlayColor ) {
@@ -196,12 +203,28 @@ function CoverEdit( {
 				isDark: newIsDark,
 				isUserOverlayColor: isUserOverlayColor || false,
 			} );
-		} )();
-		// Update the block only when the featured image changes.
-	}, [ mediaUrl ] );
+		},
+		// overlayColor.color is intentionally omitted to prevent unnecessary re-runs.
+		[ isUserOverlayColor, dimRatio ]
+	);
 
-	const hasImageBinding = !! metadata?.bindings?.url;
-	const [ dimRatioInitialized, setDimRatioInitialized ] = useState( false );
+	// Update overlay color when featured image changes.
+	// User can change the featured image outside of the block, so we need
+	// to update the block when that happens.
+	useEffect( () => {
+		if ( useFeaturedImage ) {
+			updateOverlayFromImage( mediaUrl );
+		}
+	}, [ mediaUrl, useFeaturedImage, updateOverlayFromImage ] );
+
+	// Update overlay color when URL comes from a binding source.
+	// This handles cases like pattern overrides or custom fields where
+	// the URL changes without going through onSelectMedia.
+	useEffect( () => {
+		if ( hasImageBinding ) {
+			updateOverlayFromImage( originalUrl );
+		}
+	}, [ originalUrl, hasImageBinding, updateOverlayFromImage ] );
 
 	useEffect( () => {
 		/**
@@ -233,40 +256,6 @@ function CoverEdit( {
 		dimRatioInitialized,
 		originalBackgroundType,
 		setAttributes,
-	] );
-
-	// Update overlay color when URL comes from binding
-	useEffect( () => {
-		( async () => {
-			if ( ! hasImageBinding || ! originalUrl || isUserOverlayColor ) {
-				return;
-			}
-
-			const averageBackgroundColor = await getMediaColor( originalUrl );
-
-			const newOverlayColor = averageBackgroundColor;
-			__unstableMarkNextChangeAsNotPersistent();
-			setOverlayColor( newOverlayColor );
-
-			const newIsDark = compositeIsDark(
-				dimRatio,
-				newOverlayColor,
-				averageBackgroundColor
-			);
-			__unstableMarkNextChangeAsNotPersistent();
-			setAttributes( {
-				isDark: newIsDark,
-				isUserOverlayColor: isUserOverlayColor || false,
-			} );
-		} )();
-	}, [
-		originalUrl,
-		hasImageBinding,
-		isUserOverlayColor,
-		dimRatio,
-		setOverlayColor,
-		setAttributes,
-		__unstableMarkNextChangeAsNotPersistent,
 	] );
 
 	// instead of destructuring the attributes
@@ -632,22 +621,6 @@ function CoverEdit( {
 		} );
 	};
 
-	// Determine if we should hide the reset option
-	// Hide reset when: in a pattern but no url override (default pattern)
-	// Show reset when: not in a pattern, OR in a pattern with url override
-	const hasPatternOverride =
-		metadata?.bindings?.__default?.source === 'core/pattern-overrides';
-	const blockName = metadata?.name;
-	const isInPattern = hasPatternOverride && blockName && patternClientId;
-	const hasUrlOverrideInPattern =
-		isInPattern &&
-		patternOverrides?.[ blockName ] &&
-		Object.prototype.hasOwnProperty.call(
-			patternOverrides[ blockName ],
-			'url'
-		);
-	const shouldHideReset = isInPattern && ! hasUrlOverrideInPattern;
-
 	const blockControls = (
 		<CoverBlockControls
 			attributes={ attributes }
@@ -659,7 +632,6 @@ function CoverEdit( {
 			onClearMedia={ onClearMedia }
 			blockEditingMode={ blockEditingMode }
 			hasImageBinding={ hasImageBinding }
-			shouldHideReset={ shouldHideReset }
 		/>
 	);
 
