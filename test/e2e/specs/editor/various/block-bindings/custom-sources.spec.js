@@ -556,6 +556,36 @@ test.describe( 'Registered sources', () => {
 					.inputValue();
 				expect( titleValue ).toBe( 'Text Field Value' );
 			} );
+			test( 'cover', async ( { editor, page } ) => {
+				await editor.insertBlock( {
+					name: 'core/cover',
+					attributes: {
+						url: imagePlaceholderSrc,
+						alt: 'default alt value',
+						metadata: {
+							bindings: {
+								url: {
+									source: 'testing/can-user-edit-false',
+									args: { key: 'url_field' },
+								},
+							},
+						},
+					},
+				} );
+				const coverBlock = editor.canvas.getByRole( 'document', {
+					name: 'Block: Cover',
+				} );
+				await coverBlock.click();
+
+				// Replace controls don't exist.
+				await expect(
+					page
+						.getByRole( 'toolbar', { name: 'Block tools' } )
+						.getByRole( 'button', {
+							name: 'Replace',
+						} )
+				).toBeHidden();
+			} );
 		} );
 		// The following tests just check the paragraph and assume is the case for the rest of the blocks.
 		test( 'canUserEditValue is not defined', async ( { editor, page } ) => {
