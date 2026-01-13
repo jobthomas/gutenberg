@@ -12,7 +12,7 @@
 add_filter(
 	'block_bindings_supported_attributes',
 	function ( $attributes, $block_type ) {
-		if ( 'core/cover' === $block_type && ! in_array( 'caption', $attributes, true ) ) {
+		if ( 'core/cover' === $block_type && ! in_array( 'url', $attributes, true ) ) {
 			$attributes[] = 'url';
 		}
 		return $attributes;
