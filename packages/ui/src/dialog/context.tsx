@@ -52,7 +52,7 @@ function DialogValidationProviderDev( {
 }: {
 	children: React.ReactNode;
 } ) {
-	const titleElementRef = useRef< HTMLElement | null >( null );
+	const titleElementRef = useRef< HTMLElement >( null );
 
 	const registerTitle = useCallback( ( element: HTMLElement | null ) => {
 		titleElementRef.current = element;
