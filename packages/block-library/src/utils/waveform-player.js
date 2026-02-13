@@ -8,22 +8,41 @@ import { useRefEffect } from '@wordpress/compose';
  * Internal dependencies
  */
 import { initWaveformPlayer } from './waveform-utils';
+import {
+	getEffectiveBackgroundColor,
+	getProgressBackgroundColor,
+} from '../playlist/utils';
 
 /**
  * A reusable WaveformPlayer component for the block editor.
  *
- * Renders an audio waveform visualization with play/pause controls.
+ * Renders an audio waveform visualization with dual layers (base + hover),
+ * time elements, control buttons, and progress background.
  * Automatically inherits colors from the parent block's text color.
  *
- * @param {Object}   props         - Component props.
- * @param {string}   props.src     - The audio file URL.
- * @param {string}   props.title   - The track title.
- * @param {string}   props.artist  - The artist name.
- * @param {string}   props.image   - The artwork image URL.
- * @param {Function} props.onEnded - Callback when the track finishes playing.
+ * @param {Object}   props                        - Component props.
+ * @param {string}   props.src                    - The audio file URL.
+ * @param {string}   props.title                  - The track title.
+ * @param {string}   props.artist                 - The artist name.
+ * @param {string}   props.album                  - The album name.
+ * @param {string}   props.image                  - The artwork image URL.
+ * @param {string}   props.visualizationStyle     - Waveform style (bars, mirror, etc).
+ * @param {boolean}  props.showProgressBackground - Whether to show progress background.
+ * @param {string}   props.progressColor          - Custom progress background color.
+ * @param {Function} props.onEnded                - Callback when the track finishes playing.
  * @return {Element} The WaveformPlayer element.
  */
-export function WaveformPlayer( { src, title, artist, image, onEnded } ) {
+export function WaveformPlayer( {
+	src,
+	title,
+	artist,
+	album,
+	image,
+	visualizationStyle,
+	showProgressBackground,
+	progressColor,
+	onEnded,
+} ) {
 	// Store onEnded in a ref so it doesn't need to be a useRefEffect dependency.
 	// The callback changes reference on every render (its dependency chain
 	// includes an unstable array), which would cause useRefEffect to destroy
@@ -45,14 +64,25 @@ export function WaveformPlayer( { src, title, artist, image, onEnded } ) {
 				if ( cancelled ) {
 					return;
 				}
-				const { destroy } = initWaveformPlayer( element, {
+
+				// Compute colors from the element's position in the DOM.
+				const bgColor = getEffectiveBackgroundColor( element );
+				const progressBgColor =
+					progressColor || getProgressBackgroundColor( bgColor );
+
+				const player = initWaveformPlayer( element, {
 					src,
 					title,
 					artist,
+					album,
 					image,
+					visualizationStyle,
+					showProgressBackground,
+					progressBackgroundColor: progressBgColor,
+					bgColor,
 					onEnded: () => onEndedRef.current?.(),
 				} );
-				playerDestroy = destroy;
+				playerDestroy = player.destroy;
 			}
 
 			// Defer initialization so the element inherits the correct
@@ -70,8 +100,23 @@ export function WaveformPlayer( { src, title, artist, image, onEnded } ) {
 				playerDestroy?.();
 			};
 		},
-		[ src, title, artist, image ]
+		[
+			src,
+			title,
+			artist,
+			album,
+			image,
+			visualizationStyle,
+			showProgressBackground,
+			progressColor,
+		]
 	);
 
-	return <div ref={ ref } className="wp-block-playlist__waveform-player" />;
+	return (
+		<div
+			ref={ ref }
+			className="wp-block-playlist__waveform-player"
+			data-waveform-style={ visualizationStyle || 'bars' }
+		/>
+	);
 }
