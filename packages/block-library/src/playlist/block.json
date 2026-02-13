@@ -37,6 +37,17 @@
 			"type": "boolean",
 			"default": true
 		},
+		"visualizationStyle": {
+			"type": "string",
+			"default": "bars"
+		},
+		"showProgressBackground": {
+			"type": "boolean",
+			"default": true
+		},
+		"progressColor": {
+			"type": "string"
+		},
 		"caption": {
 			"type": "string"
 		}
