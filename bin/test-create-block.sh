@@ -29,7 +29,7 @@ trap cleanup EXIT
 # First test block
 
 status "Scaffolding Example Static (ES5) block..."
-npx wp-create-block example-static-es5 -t es5
+node ./packages/create-block/index.js example-static-es5 -t es5
 cd example-static-es5
 
 status "Verifying project..."
@@ -45,7 +45,7 @@ cd ..
 # Second test block
 
 status "Scaffolding Example Static block..."
-npx wp-create-block example-static --no-wp-scripts
+node ./packages/create-block/index.js example-static --no-wp-scripts
 cd example-static
 
 status "Verifying project..."
@@ -80,6 +80,10 @@ module.exports = [
 	},
 ];
 EOF
+
+# Set NODE_PATH so wp-scripts can find its dependencies (e.g., webpack) which
+# may not be hoisted to root node_modules with nested install strategies.
+export NODE_PATH="../packages/scripts/node_modules:$NODE_PATH"
 
 status "Formatting files..."
 ../node_modules/.bin/wp-scripts format

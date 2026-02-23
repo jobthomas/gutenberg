@@ -57,6 +57,9 @@
 		"@wordpress/ui": "file:../ui",
 		"clsx": "^2.1.1"
 	},
+	"devDependencies": {
+		"@wordpress/icons": "file:../icons"
+	},
 	"peerDependencies": {
 		"react": "^18.0.0"
 	},

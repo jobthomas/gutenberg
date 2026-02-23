@@ -1,7 +1,10 @@
-/**
- * External dependencies
- */
-import { type ReactNode } from 'react';
+export interface ThemeProviderStyles {
+	resolvedSettings: {
+		color: { primary: string; bg: string };
+		cursor: { control: 'default' | 'pointer' } | undefined;
+	};
+	themeProviderStyles: React.CSSProperties;
+}
 
 export interface ThemeProviderSettings {
 	/**
@@ -52,7 +55,7 @@ export interface ThemeProviderProps extends ThemeProviderSettings {
 	/**
 	 * The children to render.
 	 */
-	children?: ReactNode;
+	children?: React.ReactNode;
 
 	/**
 	 * When a ThemeProvider is the root provider, it will apply its theming

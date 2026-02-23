@@ -93,6 +93,7 @@
 		"css-to-react-native-transform": "^2.1.0",
 		"globals": "14.0.0",
 		"jest-environment-jsdom": "^30.2.0",
+		"react-devtools-core": "4.28.5",
 		"sass": "^1.54.0",
 		"webdriverio": "8.16.20"
 	},

@@ -10,28 +10,86 @@ const path = require( 'path' );
 
 const nodeModulesDir = path.join( __dirname, '../', 'node_modules' );
 
-const fetchRNPackageDirs = ( dir ) => {
-	const dirList = fs.readdirSync( dir, { withFileTypes: true } );
+/**
+ * Recursively find all directories containing .podspec files.
+ * Works with both npm hoisted and linked (store-based) structures.
+ *
+ * @param {string} dir   - Directory to search
+ * @param {number} depth - Current recursion depth (to prevent infinite loops)
+ * @return {Array} Array of objects with dir, files, and package properties
+ */
+const fetchRNPackageDirs = ( dir, depth = 0 ) => {
+	// Prevent infinite recursion
+	if ( depth > 10 ) {
+		return [];
+	}
+
+	let dirList;
+	try {
+		dirList = fs.readdirSync( dir, { withFileTypes: true } );
+	} catch {
+		return [];
+	}
+
 	const packageDirs = [];
 	dirList
-		.filter( ( file ) => file.isDirectory() )
+		.filter( ( file ) => file.isDirectory() || file.isSymbolicLink() )
 		.map( ( file ) => file.name )
 		.forEach( ( packageName ) => {
 			const packageDir = path.join( dir, packageName );
-			if ( packageName.startsWith( '@' ) ) {
-				packageDirs.push( ...fetchRNPackageDirs( packageDir ) );
-			} else {
-				const files = fs.readdirSync( packageDir );
-				const podSpecs = files.filter( ( file ) =>
-					file.toLowerCase().endsWith( '.podspec' )
+
+			// For npm linked strategy's .store directory, recurse into it
+			if ( packageName === '.store' ) {
+				packageDirs.push(
+					...fetchRNPackageDirs( packageDir, depth + 1 )
 				);
-				if ( podSpecs.length > 0 ) {
-					packageDirs.push( {
-						dir: packageDir,
-						files: podSpecs,
-						package: packageName,
-					} );
+				return;
+			}
+
+			// Skip other hidden directories
+			if ( packageName.startsWith( '.' ) ) {
+				return;
+			}
+
+			// For scoped packages (@scope/name), recurse into the scope
+			if ( packageName.startsWith( '@' ) ) {
+				packageDirs.push(
+					...fetchRNPackageDirs( packageDir, depth + 1 )
+				);
+				return;
+			}
+
+			// For store entries (package@version-hash), look in node_modules subdirectory
+			if ( packageName.includes( '@' ) && depth > 0 ) {
+				const storeNodeModules = path.join(
+					packageDir,
+					'node_modules'
+				);
+				if ( fs.existsSync( storeNodeModules ) ) {
+					packageDirs.push(
+						...fetchRNPackageDirs( storeNodeModules, depth + 1 )
+					);
 				}
+				return;
+			}
+
+			// Check for podspec files in this directory
+			let files;
+			try {
+				files = fs.readdirSync( packageDir );
+			} catch {
+				return;
+			}
+
+			const podSpecs = files.filter( ( file ) =>
+				file.toLowerCase().endsWith( '.podspec' )
+			);
+			if ( podSpecs.length > 0 ) {
+				packageDirs.push( {
+					dir: packageDir,
+					files: podSpecs,
+					package: packageName,
+				} );
 			}
 		} );
 	return packageDirs;

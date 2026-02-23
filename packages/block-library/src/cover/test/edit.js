@@ -158,7 +158,7 @@ describe( 'Cover block', () => {
 			await selectBlock( 'Block: Cover' );
 			expect(
 				within( screen.getByLabelText( 'Block: Cover' ) ).getByRole(
-					'img'
+					'presentation'
 				)
 			).toBeInTheDocument();
 
@@ -173,7 +173,7 @@ describe( 'Cover block', () => {
 
 			expect(
 				within( screen.getByLabelText( 'Block: Cover' ) ).queryByRole(
-					'img'
+					'presentation'
 				)
 			).not.toBeInTheDocument();
 		} );
@@ -244,7 +244,7 @@ describe( 'Cover block', () => {
 
 			expect(
 				within( screen.getByLabelText( 'Block: Cover' ) ).getByRole(
-					'img'
+					'presentation'
 				)
 			).toHaveStyle( 'object-position: 100% 50%;' );
 		} );

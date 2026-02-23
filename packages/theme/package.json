@@ -96,10 +96,11 @@
 		"@terrazzo/token-tools": "^2.0.3",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@types/jest": "^29.5.14",
-		"@types/node": "^20.17.10",
+		"@types/node": "^20.19.0",
 		"esbuild": "^0.27.2",
 		"esbuild-esm-loader": "^0.3.3",
-		"storybook": "^10.2.8"
+		"storybook": "^10.2.8",
+		"stylelint": "^16.8.2"
 	},
 	"peerDependencies": {
 		"react": "^18.0.0",

@@ -64,7 +64,8 @@
 	},
 	"devDependencies": {
 		"@types/eslint": "^9",
-		"@types/estree": "1.0.5"
+		"@types/estree": "1.0.5",
+		"@typescript-eslint/parser": "^8.0.0"
 	},
 	"peerDependencies": {
 		"@babel/core": ">=7",

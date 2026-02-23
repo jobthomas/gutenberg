@@ -80,5 +80,10 @@ export function useDeprioritizedInitialFocus( {
 		};
 	}, [ initialFocus, deprioritizedAttribute ] );
 
-	return { resolvedInitialFocus, popupRef };
+	// Explicit return type to prevent TS from inferring a non-portable
+	// path to a transitive dependency (`@base-ui/utils`).
+	return { resolvedInitialFocus, popupRef } as {
+		resolvedInitialFocus: InitialFocus;
+		popupRef: React.RefObject< HTMLDivElement >;
+	};
 }
