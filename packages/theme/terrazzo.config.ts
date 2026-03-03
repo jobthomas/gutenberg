@@ -22,6 +22,7 @@ export default defineConfig( {
 		'./tokens/cursor.json',
 		'./tokens/dimension.json',
 		'./tokens/elevation.json',
+		'./tokens/motion.json',
 		'./tokens/typography.json',
 	],
 	outDir: './src/prebuilt',
@@ -120,6 +121,16 @@ export default defineConfig( {
 					name: 'SurfaceWidthSize',
 					description: 'Size scale for surface width tokens.',
 					patterns: [ /^wpds-dimension\.surface-width\.([^.]+)$/ ],
+				},
+				{
+					name: 'DurationSize',
+					description: 'Size scale for duration tokens.',
+					patterns: [ /^wpds-motion\.duration\.([^.]+)$/ ],
+				},
+				{
+					name: 'Easing',
+					description: 'Easing curve variants.',
+					patterns: [ /^wpds-motion\.easing\.([^.]+)$/ ],
 				},
 				{
 					name: 'BorderRadiusSize',
