@@ -60,7 +60,7 @@ export default function NavigationItem( {
 	const content = (
 		<HStack justify="flex-start" spacing={ 2 } style={ { flexGrow: '1' } }>
 			{ wrapIcon( icon, shouldShowPlaceholder ) }
-			<FlexBlock>{ children }</FlexBlock>
+			<FlexBlock>{ '\u2728 ' }{ children }</FlexBlock>
 		</HStack>
 	);
 

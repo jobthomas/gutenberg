@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
@@ -166,6 +166,10 @@ async function dev() {
 		console.log( '\n📦 Building vendor files...' );
 		await exec( 'node', [ './bin/packages/build-vendors.mjs' ] );
 
+		// Step 6.5: Build HMR runtime (react-refresh for browser)
+		console.log( '\n🔥 Building HMR runtime...' );
+		await exec( 'node', [ './bin/hmr/build-runtime.mjs' ] );
+
 		const setupTime = Date.now() - startTime;
 		console.log(
 			`\n✅ Initial build completed! (${ Math.round(
@@ -192,7 +196,11 @@ async function dev() {
 			cwd: ROOT_DIR,
 			stdio: [ 'inherit', 'pipe', 'inherit' ],
 			shell: true,
-			env: { ...process.env, NODE_ENV: 'development' },
+			env: {
+				...process.env,
+				NODE_ENV: 'development',
+				WP_BUILD_HMR: '1',
+			},
 		} );
 
 		// Handle process termination
@@ -256,4 +264,51 @@ async function dev() {
 	}
 }
 
+/**
+ * Check for conflicting webpack processes that could overwrite esbuild output.
+ * A stale webpack dev server watching the same directory will clobber the
+ * non-minified index.js files in build/scripts/ with webpack chunk format,
+ * breaking the site editor when SCRIPT_DEBUG is enabled.
+ */
+function checkForConflictingProcesses() {
+	try {
+		const ps = execSync( 'ps aux', { encoding: 'utf-8' } );
+		const webpackLines = ps
+			.split( '\n' )
+			.filter(
+				( line ) =>
+					/webpack/.test( line ) &&
+					! /grep/.test( line ) &&
+					// Ignore our own process
+					! line.includes( String( process.pid ) )
+			);
+
+		if ( webpackLines.length === 0 ) {
+			return;
+		}
+
+		const pids = webpackLines
+			.map( ( line ) => line.trim().split( /\s+/ )[ 1 ] )
+			.filter( Boolean );
+
+		console.error(
+			`\n⚠️  Found ${ pids.length } webpack process(es) that may conflict with the dev build:\n`
+		);
+		for ( const line of webpackLines ) {
+			console.error( `   ${ line.trim() }` );
+		}
+		console.error(
+			`\nThese processes can overwrite esbuild output in build/scripts/ with webpack chunk format,`
+		);
+		console.error(
+			`breaking the site editor when SCRIPT_DEBUG is enabled.`
+		);
+		console.error( `\nKill them with:  kill -9 ${ pids.join( ' ' ) }\n` );
+		process.exit( 1 );
+	} catch {
+		// If ps fails, just continue — this is a best-effort check.
+	}
+}
+
+checkForConflictingProcesses();
 dev();

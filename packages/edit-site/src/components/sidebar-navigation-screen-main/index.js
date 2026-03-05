@@ -19,13 +19,6 @@ export function MainSidebarNavigationContent( { isBlockBasedTheme = true } ) {
 		<ItemGroup className="edit-site-sidebar-navigation-screen-main">
 			{ isBlockBasedTheme && (
 				<>
-					<SidebarNavigationItemGlobalStyles
-						to="/styles"
-						uid="global-styles-navigation-item"
-						icon={ styles }
-					>
-						{ __( 'Styles' ) }
-					</SidebarNavigationItemGlobalStyles>
 					<SidebarNavigationItem
 						uid="navigation-navigation-item"
 						to="/navigation"
@@ -42,6 +35,13 @@ export function MainSidebarNavigationContent( { isBlockBasedTheme = true } ) {
 					>
 						{ __( 'Pages' ) }
 					</SidebarNavigationItem>
+					<SidebarNavigationItemGlobalStyles
+						to="/styles"
+						uid="global-styles-navigation-item"
+						icon={ styles }
+					>
+						{ __( 'Styles' ) }
+					</SidebarNavigationItemGlobalStyles>
 					<SidebarNavigationItem
 						uid="template-navigation-item"
 						to="/template"

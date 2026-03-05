@@ -67,6 +67,7 @@ import {
 	buildWorkers,
 	generateWorkerCode,
 } from './worker-build.mjs';
+import { reactRefreshPlugin } from './react-refresh-plugin.mjs';
 
 const ROOT_DIR = process.cwd();
 const PACKAGES_DIR = path.join( ROOT_DIR, 'packages' );
@@ -490,6 +491,8 @@ async function bundlePackage( packageName, options = {} ) {
 
 		const baseBundlePlugins = [ momentTimezoneAliasPlugin() ];
 
+		const hmrEnabled = process.env.WP_BUILD_HMR === '1';
+
 		builds.push(
 			esbuild.build( {
 				...baseConfig,
@@ -513,13 +516,14 @@ async function bundlePackage( packageName, options = {} ) {
 				define: getDefine( true ),
 				plugins: [
 					...baseBundlePlugins,
+					hmrEnabled && reactRefreshPlugin( PACKAGES_DIR ),
 					wordpressExternalsPlugin(
 						'index.min',
 						'iife',
 						packageJson.wpScriptExtraDependencies || [],
 						false // Skip asset file for non-minified build
 					),
-				],
+				].filter( Boolean ),
 			} )
 		);
 
