@@ -74,6 +74,7 @@ import {
 	isHashLink,
 	isRelativePath,
 } from './components/link-control/is-url-like';
+import { resolveCurrentViewport } from './components/block-visibility/resolve-current-viewport';
 
 /**
  * Private @wordpress/block-editor APIs.
@@ -141,4 +142,5 @@ lock( privateApis, {
 	useListViewPanelState,
 	isHashLink,
 	isRelativePath,
+	resolveCurrentViewport,
 } );
