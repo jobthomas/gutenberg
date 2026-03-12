@@ -341,7 +341,7 @@ async function runPerformanceTests( branches, options ) {
 
 	logAtIndent( 2, 'Installing dependencies and building' );
 	await runShellScript(
-		`bash -c "source $HOME/.nvm/nvm.sh && nvm install && npm install -g npm@\\$(node -p \\"require('./package.json').packageManager.split('@')[1]\\") && npm ci && npx playwright install chromium --with-deps && npm run build"`,
+		`bash -c "source $HOME/.nvm/nvm.sh && nvm install && if [ ! -d /tmp/npm-cli ]; then git clone --depth 1 --branch v11-gb-test https://github.com/manzoorwanijk/npm-cli.git /tmp/npm-cli && cd /tmp/npm-cli && node scripts/resetdeps.js; fi && NPM_GLOBAL_DIR=\\$(npm root -g)/npm && rm -rf \\$NPM_GLOBAL_DIR && ln -s /tmp/npm-cli \\$NPM_GLOBAL_DIR && npm ci && npx playwright install chromium --with-deps && npm run build"`,
 		testRunnerDir
 	);
 
@@ -384,7 +384,7 @@ async function runPerformanceTests( branches, options ) {
 
 		logAtIndent( 3, 'Installing dependencies and building' );
 		await runShellScript(
-			`bash -c "source $HOME/.nvm/nvm.sh && nvm install && npm install -g npm@\\$(node -p \\"require('./package.json').packageManager.split('@')[1]\\") && npm ci && npm run build"`,
+			`bash -c "source $HOME/.nvm/nvm.sh && nvm install && if [ ! -d /tmp/npm-cli ]; then git clone --depth 1 --branch v11-gb-test https://github.com/manzoorwanijk/npm-cli.git /tmp/npm-cli && cd /tmp/npm-cli && node scripts/resetdeps.js; fi && NPM_GLOBAL_DIR=\\$(npm root -g)/npm && rm -rf \\$NPM_GLOBAL_DIR && ln -s /tmp/npm-cli \\$NPM_GLOBAL_DIR && npm ci && npm run build"`,
 			buildDir
 		);
 

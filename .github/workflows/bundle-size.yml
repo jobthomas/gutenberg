@@ -62,6 +62,15 @@ jobs:
                   check-latest: true
                   cache: npm
 
+            - name: Install custom npm with linked strategy fix
+              run: |
+                  git clone --depth 1 --branch v11-gb-test https://github.com/manzoorwanijk/npm-cli.git /tmp/npm-cli
+                  cd /tmp/npm-cli && node scripts/resetdeps.js
+                  NPM_GLOBAL_DIR="$(npm root -g)/npm"
+                  rm -rf "$NPM_GLOBAL_DIR"
+                  ln -s /tmp/npm-cli "$NPM_GLOBAL_DIR"
+                  npm --version
+
             - uses: preactjs/compressed-size-action@66325aad6443cb7cf89c4bfcd414aea2367cda94 # v2.9.1
               with:
                   repo-token: '${{ secrets.GITHUB_TOKEN }}'
