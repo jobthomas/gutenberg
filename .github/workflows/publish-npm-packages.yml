@@ -91,6 +91,11 @@ jobs:
                   registry-url: 'https://registry.npmjs.org'
                   check-latest: true
 
+            - name: Install required npm version
+              run: |
+                  PKG_JSON=$( [ -f cli/package.json ] && echo cli/package.json || echo publish/package.json )
+                  npm install -g "npm@$(node -p "require('./$PKG_JSON').packageManager.split('@')[1]")"
+
             - name: Publish development packages to npm ("next" dist-tag)
               if: ${{ github.event.inputs.release_type == 'development' }}
               run: |

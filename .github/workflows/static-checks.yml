@@ -58,8 +58,8 @@ jobs:
                   node-version: ${{ matrix.node }}
                   cache: npm
 
-            - name: Pin npm version for consistency
-              run: npm install -g npm@10
+            - name: Install required npm version
+              run: npm install -g "npm@$(node -p "require('./package.json').packageManager.split('@')[1]")"
 
             - name: npm install
               # A "full" install is executed, since `npm ci` does not always exit

@@ -14,9 +14,10 @@
 	"bugs": {
 		"url": "https://github.com/WordPress/gutenberg/issues"
 	},
+	"packageManager": "npm@10.9.6",
 	"engines": {
 		"node": ">=20.19.0",
-		"npm": ">=10.2.3"
+		"npm": ">=10.9.6"
 	},
 	"wpPlugin": {
 		"name": "gutenberg",
