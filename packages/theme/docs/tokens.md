@@ -139,6 +139,10 @@ Do not edit directly.
 | `--wpds-dimension-gap-xl`            | Extra large gap              |
 | `--wpds-dimension-gap-2xl`           | 2x extra large gap           |
 | `--wpds-dimension-gap-3xl`           | 3x extra large gap           |
+| `--wpds-dimension-size-xs`           | Extra small element size     |
+| `--wpds-dimension-size-sm`           | Small element size           |
+| `--wpds-dimension-size-md`           | Medium element size          |
+| `--wpds-dimension-size-lg`           | Large element size           |
 | `--wpds-dimension-surface-width-xs`  | Extra small surface width    |
 | `--wpds-dimension-surface-width-sm`  | Small surface width          |
 | `--wpds-dimension-surface-width-md`  | Medium surface width         |

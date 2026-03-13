@@ -207,6 +207,24 @@
 				}
 			}
 		},
+		"size": {
+			"xs": {
+				"$value": "{wpds-dimension.primitive.space.40}",
+				"$description": "Extra small element size"
+			},
+			"sm": {
+				"$value": "{wpds-dimension.primitive.space.60}",
+				"$description": "Small element size"
+			},
+			"md": {
+				"$value": "{wpds-dimension.primitive.space.70}",
+				"$description": "Medium element size"
+			},
+			"lg": {
+				"$value": "{wpds-dimension.primitive.space.80}",
+				"$description": "Large element size"
+			}
+		},
 		"surface-width": {
 			"xs": {
 				"$value": { "value": 240, "unit": "px" },
