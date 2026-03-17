@@ -1,4 +1,3 @@
-@use "@wordpress/base-styles/animations" as *;
 @use "@wordpress/base-styles/colors" as *;
 @use "@wordpress/base-styles/mixins" as *;
 @use "@wordpress/base-styles/variables" as *;
@@ -15,14 +14,16 @@
 	background-color: rgba($black, 0.35);
 	z-index: z-index(".components-modal__screen-overlay");
 	display: flex;
-	// This animates the appearance of the backdrop.
-	@include animation__fade-in();
+	@media not (prefers-reduced-motion) {
+		animation: components-modal__fade-in var(--wpds-motion-duration-sm) linear;
+		animation-fill-mode: forwards;
+	}
 
 	&.is-animating-out {
-		// Note: it's important that the fade-out animation doesn't end after the
-		// modal frame's disappear animation, because the component will be removed
-		// from the DOM when that animation ends.
-		@include animation__fade-out($delay: 80ms);
+		@media not (prefers-reduced-motion) {
+			animation: components-modal__fade-out var(--wpds-motion-duration-sm) linear var(--wpds-motion-duration-sm);
+			animation-fill-mode: forwards;
+		}
 	}
 }
 
@@ -42,7 +43,7 @@
 	// Animate the modal frame/contents appearing on the page.
 	animation-name: components-modal__appear-animation;
 	animation-fill-mode: forwards;
-	animation-timing-function: cubic-bezier(0.29, 0, 0, 1);
+	animation-timing-function: var(--wpds-motion-easing-emphasized-decelerate);
 
 	// Ensure all headings use the proper editor text color, overriding wp-admin common.css
 	h1,
@@ -52,12 +53,12 @@
 	}
 
 	@media not (prefers-reduced-motion) {
-		animation-duration: var(--modal-frame-animation-duration);
+		animation-duration: var(--wpds-motion-duration-md);
 	}
 
 	.components-modal__screen-overlay.is-animating-out & {
 		animation-name: components-modal__disappear-animation;
-		animation-timing-function: cubic-bezier(1, 0, 0.2, 1);
+		animation-timing-function: var(--wpds-motion-easing-emphasized-accelerate);
 	}
 
 	// Show a centered modal on bigger screens.
@@ -116,6 +117,24 @@
 				flex: 1;
 			}
 		}
+	}
+}
+
+@keyframes components-modal__fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes components-modal__fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
 	}
 }
 
