@@ -53,7 +53,7 @@ describe( 'useEntityRecords', () => {
 			hasResolved: false,
 			hasStarted: false,
 			isResolving: false,
-			status: 'IDLE',
+			status: 'idle',
 			totalItems: null,
 			totalPages: null,
 		} );
@@ -70,7 +70,7 @@ describe( 'useEntityRecords', () => {
 			hasResolved: true,
 			hasStarted: true,
 			isResolving: false,
-			status: 'SUCCESS',
+			status: 'finished',
 			totalItems: 3,
 			totalPages: 1,
 		} );
