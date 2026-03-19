@@ -2,16 +2,14 @@
 
 ## Unreleased
 
-<<<<<<< HEAD
+-   Small spacing adjustments between title, subtitle and action elements in the header. [#76683](https://github.com/WordPress/gutenberg/pull/76683)
+
 ## 1.11.0 (2026-04-01)
 
 ### Bug Fixes
 
 -   `Breadcrumbs`: throw a runtime error when non-last items are missing a `to` prop [#76493](https://github.com/WordPress/gutenberg/pull/76493/)
 -   Fix Page Header not rendering when only `actions` prop is provided. [#76695](https://github.com/WordPress/gutenberg/pull/76695)
-=======
-- Small spacing adjustments between title, subtitle and action elements in the header.
->>>>>>> 808a70d845d (Admin UI: don't output actions container when no actions)
 
 ## 1.10.0 (2026-03-18)
 
