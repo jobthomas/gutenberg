@@ -32,7 +32,12 @@ export default function Header( {
 			className="admin-ui-page__header"
 			render={ <header /> }
 		>
-			<Stack direction="row" justify="space-between" gap="sm">
+			<Stack
+				className="admin-ui-page__header-content"
+				direction="row"
+				gap="sm"
+				justify="space-between"
+			>
 				<Stack direction="row" gap="sm" align="center" justify="start">
 					{ showSidebarToggle && (
 						<SidebarToggleSlot
