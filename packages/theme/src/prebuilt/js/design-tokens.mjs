@@ -121,6 +121,7 @@ export default [
 	'--wpds-dimension-size-sm',
 	'--wpds-dimension-size-md',
 	'--wpds-dimension-size-lg',
+	'--wpds-dimension-size-xl',
 	'--wpds-dimension-surface-width-xs',
 	'--wpds-dimension-surface-width-sm',
 	'--wpds-dimension-surface-width-md',

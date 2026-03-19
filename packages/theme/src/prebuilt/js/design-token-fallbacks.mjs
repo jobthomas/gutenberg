@@ -130,6 +130,7 @@ export default {
 	'--wpds-dimension-size-lg': '40px',
 	'--wpds-dimension-size-md': '32px',
 	'--wpds-dimension-size-sm': '24px',
+	'--wpds-dimension-size-xl': '48px',
 	'--wpds-dimension-size-xs': '16px',
 	'--wpds-dimension-surface-width-2xl': '960px',
 	'--wpds-dimension-surface-width-lg': '560px',

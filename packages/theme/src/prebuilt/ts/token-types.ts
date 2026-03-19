@@ -16,7 +16,7 @@ export type GapSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 /**
  * Size scale for element sizing tokens.
  */
-export type Size = 'xs' | 'sm' | 'md' | 'lg';
+export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 /**
  * Size scale for surface width tokens.

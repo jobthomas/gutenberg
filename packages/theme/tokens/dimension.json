@@ -223,6 +223,10 @@
 			"lg": {
 				"$value": "{wpds-dimension.primitive.space.80}",
 				"$description": "Large element size"
+			},
+			"xl": {
+				"$value": "{wpds-dimension.primitive.space.90}",
+				"$description": "Extra large element size"
 			}
 		},
 		"surface-width": {

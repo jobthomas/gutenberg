@@ -143,6 +143,7 @@ Do not edit directly.
 | `--wpds-dimension-size-sm`           | Small element size           |
 | `--wpds-dimension-size-md`           | Medium element size          |
 | `--wpds-dimension-size-lg`           | Large element size           |
+| `--wpds-dimension-size-xl`           | Extra large element size     |
 | `--wpds-dimension-surface-width-xs`  | Extra small surface width    |
 | `--wpds-dimension-surface-width-sm`  | Small surface width          |
 | `--wpds-dimension-surface-width-md`  | Medium surface width         |
