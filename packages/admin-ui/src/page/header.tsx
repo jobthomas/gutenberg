@@ -48,15 +48,17 @@ export default function Header( {
 					{ breadcrumbs }
 					{ badges }
 				</Stack>
-				<Stack
-					direction="row"
-					gap="sm"
-					style={ { width: 'auto', flexShrink: 0 } }
-					className="admin-ui-page__header-actions"
-					align="center"
-				>
-					{ actions }
-				</Stack>
+				{ actions && (
+					<Stack
+						direction="row"
+						gap="sm"
+						style={ { width: 'auto', flexShrink: 0 } }
+						className="admin-ui-page__header-actions"
+						align="center"
+					>
+						{ actions }
+					</Stack>
+				) }
 			</Stack>
 			{ subTitle && (
 				<p className="admin-ui-page__header-subtitle">{ subTitle }</p>
