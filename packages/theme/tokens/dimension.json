@@ -213,19 +213,19 @@
 				"$description": "Extra small element size"
 			},
 			"sm": {
-				"$value": "{wpds-dimension.primitive.space.60}",
+				"$value": "{wpds-dimension.primitive.space.50}",
 				"$description": "Small element size"
 			},
 			"md": {
-				"$value": "{wpds-dimension.primitive.space.70}",
+				"$value": "{wpds-dimension.primitive.space.60}",
 				"$description": "Medium element size"
 			},
 			"lg": {
-				"$value": "{wpds-dimension.primitive.space.80}",
+				"$value": "{wpds-dimension.primitive.space.70}",
 				"$description": "Large element size"
 			},
 			"xl": {
-				"$value": "{wpds-dimension.primitive.space.90}",
+				"$value": "{wpds-dimension.primitive.space.80}",
 				"$description": "Extra large element size"
 			}
 		},
