@@ -15,13 +15,13 @@
 	z-index: z-index(".components-modal__screen-overlay");
 	display: flex;
 	@media not (prefers-reduced-motion) {
-		animation: components-modal__fade-in var(--wpds-motion-duration-sm) var(--wpds-motion-easing-decelerate-emphasized);
+		animation: components-modal__fade-in var(--wpds-motion-duration-sm) var(--wpds-motion-easing-gentle);
 		animation-fill-mode: forwards;
 	}
 
 	&.is-animating-out {
 		@media not (prefers-reduced-motion) {
-			animation: components-modal__fade-out var(--wpds-motion-duration-sm) var(--wpds-motion-easing-decelerate-emphasized) var(--wpds-motion-duration-sm);
+			animation: components-modal__fade-out var(--wpds-motion-duration-sm) var(--wpds-motion-easing-gentle) var(--wpds-motion-duration-sm);
 			animation-fill-mode: forwards;
 		}
 	}
