@@ -122,34 +122,34 @@ Do not edit directly.
 
 ### Dimension
 
-| Variable name                        | Description                  |
-| ------------------------------------ | ---------------------------- |
-| `--wpds-dimension-base`              | Base dimension unit          |
-| `--wpds-dimension-padding-xs`        | Extra small padding          |
-| `--wpds-dimension-padding-sm`        | Small padding                |
-| `--wpds-dimension-padding-md`        | Medium padding               |
-| `--wpds-dimension-padding-lg`        | Large padding                |
-| `--wpds-dimension-padding-xl`        | Extra large padding          |
-| `--wpds-dimension-padding-2xl`       | 2x extra large padding       |
-| `--wpds-dimension-padding-3xl`       | 3x extra large padding       |
-| `--wpds-dimension-gap-xs`            | Extra small gap              |
-| `--wpds-dimension-gap-sm`            | Small gap                    |
-| `--wpds-dimension-gap-md`            | Medium gap                   |
-| `--wpds-dimension-gap-lg`            | Large gap                    |
-| `--wpds-dimension-gap-xl`            | Extra large gap              |
-| `--wpds-dimension-gap-2xl`           | 2x extra large gap           |
-| `--wpds-dimension-gap-3xl`           | 3x extra large gap           |
-| `--wpds-dimension-size-xs`           | Extra small element size     |
-| `--wpds-dimension-size-sm`           | Small element size           |
-| `--wpds-dimension-size-md`           | Medium element size          |
-| `--wpds-dimension-size-lg`           | Large element size           |
-| `--wpds-dimension-size-xl`           | Extra large element size     |
-| `--wpds-dimension-surface-width-xs`  | Extra small surface width    |
-| `--wpds-dimension-surface-width-sm`  | Small surface width          |
-| `--wpds-dimension-surface-width-md`  | Medium surface width         |
-| `--wpds-dimension-surface-width-lg`  | Large surface width          |
-| `--wpds-dimension-surface-width-xl`  | Extra large surface width    |
-| `--wpds-dimension-surface-width-2xl` | 2x extra large surface width |
+| Variable name                        | Description                                                              |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `--wpds-dimension-base`              | Base dimension unit                                                      |
+| `--wpds-dimension-padding-xs`        | Extra small padding                                                      |
+| `--wpds-dimension-padding-sm`        | Small padding                                                            |
+| `--wpds-dimension-padding-md`        | Medium padding                                                           |
+| `--wpds-dimension-padding-lg`        | Large padding                                                            |
+| `--wpds-dimension-padding-xl`        | Extra large padding                                                      |
+| `--wpds-dimension-padding-2xl`       | 2x extra large padding                                                   |
+| `--wpds-dimension-padding-3xl`       | 3x extra large padding                                                   |
+| `--wpds-dimension-gap-xs`            | Extra small gap                                                          |
+| `--wpds-dimension-gap-sm`            | Small gap                                                                |
+| `--wpds-dimension-gap-md`            | Medium gap                                                               |
+| `--wpds-dimension-gap-lg`            | Large gap                                                                |
+| `--wpds-dimension-gap-xl`            | Extra large gap                                                          |
+| `--wpds-dimension-gap-2xl`           | 2x extra large gap                                                       |
+| `--wpds-dimension-gap-3xl`           | 3x extra large gap                                                       |
+| `--wpds-dimension-size-2xs`          | For small controls like checkboxes and radios, or small decorative icons |
+| `--wpds-dimension-size-xs`           | Extra small                                                              |
+| `--wpds-dimension-size-sm`           | For icons and small buttons                                              |
+| `--wpds-dimension-size-md`           | For medium-sized buttons and inputs                                      |
+| `--wpds-dimension-size-lg`           | Default size for buttons and inputs                                      |
+| `--wpds-dimension-surface-width-xs`  | Extra small surface width                                                |
+| `--wpds-dimension-surface-width-sm`  | Small surface width                                                      |
+| `--wpds-dimension-surface-width-md`  | Medium surface width                                                     |
+| `--wpds-dimension-surface-width-lg`  | Large surface width                                                      |
+| `--wpds-dimension-surface-width-xl`  | Extra large surface width                                                |
+| `--wpds-dimension-surface-width-2xl` | 2x extra large surface width                                             |
 
 ### Elevation
 

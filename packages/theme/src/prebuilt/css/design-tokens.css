@@ -116,11 +116,11 @@
 	--wpds-dimension-padding-sm: 8px; /* Small padding */
 	--wpds-dimension-padding-xl: 20px; /* Extra large padding */
 	--wpds-dimension-padding-xs: 4px; /* Extra small padding */
-	--wpds-dimension-size-lg: 32px; /* Large element size */
-	--wpds-dimension-size-md: 24px; /* Medium element size */
-	--wpds-dimension-size-sm: 20px; /* Small element size */
-	--wpds-dimension-size-xl: 40px; /* Extra large element size */
-	--wpds-dimension-size-xs: 16px; /* Extra small element size */
+	--wpds-dimension-size-2xs: 16px; /* For small controls like checkboxes and radios, or small decorative icons */
+	--wpds-dimension-size-lg: 40px; /* Default size for buttons and inputs */
+	--wpds-dimension-size-md: 32px; /* For medium-sized buttons and inputs */
+	--wpds-dimension-size-sm: 24px; /* For icons and small buttons */
+	--wpds-dimension-size-xs: 20px; /* Extra small */
 	--wpds-dimension-surface-width-2xl: 960px; /* 2x extra large surface width */
 	--wpds-dimension-surface-width-lg: 560px; /* Large surface width */
 	--wpds-dimension-surface-width-md: 400px; /* Medium surface width */
@@ -206,11 +206,11 @@
 	--wpds-dimension-padding-sm: 8px; /* Small padding */
 	--wpds-dimension-padding-xl: 20px; /* Extra large padding */
 	--wpds-dimension-padding-xs: 4px; /* Extra small padding */
-	--wpds-dimension-size-lg: 32px; /* Large element size */
-	--wpds-dimension-size-md: 24px; /* Medium element size */
-	--wpds-dimension-size-sm: 20px; /* Small element size */
-	--wpds-dimension-size-xl: 40px; /* Extra large element size */
-	--wpds-dimension-size-xs: 16px; /* Extra small element size */
+	--wpds-dimension-size-2xs: 16px; /* For small controls like checkboxes and radios, or small decorative icons */
+	--wpds-dimension-size-lg: 40px; /* Default size for buttons and inputs */
+	--wpds-dimension-size-md: 32px; /* For medium-sized buttons and inputs */
+	--wpds-dimension-size-sm: 24px; /* For icons and small buttons */
+	--wpds-dimension-size-xs: 20px; /* Extra small */
 	--wpds-dimension-surface-width-2xl: 960px; /* 2x extra large surface width */
 	--wpds-dimension-surface-width-lg: 560px; /* Large surface width */
 	--wpds-dimension-surface-width-md: 400px; /* Medium surface width */
