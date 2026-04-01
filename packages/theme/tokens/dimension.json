@@ -208,25 +208,25 @@
 			}
 		},
 		"size": {
-			"xs": {
+			"2xs": {
 				"$value": "{wpds-dimension.primitive.space.40}",
-				"$description": "Extra small element size"
+				"$description": "For small controls like checkboxes and radios, or small decorative icons"
+			},
+			"xs": {
+				"$value": "{wpds-dimension.primitive.space.50}",
+				"$description": "Extra small"
 			},
 			"sm": {
-				"$value": "{wpds-dimension.primitive.space.50}",
-				"$description": "Small element size"
+				"$value": "{wpds-dimension.primitive.space.60}",
+				"$description": "For icons and small buttons"
 			},
 			"md": {
-				"$value": "{wpds-dimension.primitive.space.60}",
-				"$description": "Medium element size"
+				"$value": "{wpds-dimension.primitive.space.70}",
+				"$description": "For medium-sized buttons and inputs"
 			},
 			"lg": {
-				"$value": "{wpds-dimension.primitive.space.70}",
-				"$description": "Large element size"
-			},
-			"xl": {
 				"$value": "{wpds-dimension.primitive.space.80}",
-				"$description": "Extra large element size"
+				"$description": "Default size for buttons and inputs"
 			}
 		},
 		"surface-width": {
