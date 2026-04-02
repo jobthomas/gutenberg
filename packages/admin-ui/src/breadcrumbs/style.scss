@@ -1,7 +1,6 @@
 .admin-ui-breadcrumbs__list {
 	font-family: var(--wpds-typography-font-family-heading);
 	font-size: var(--wpds-typography-font-size-lg);
-	font-weight: var(--wpds-typography-font-weight-medium);
 	line-height: var(--wpds-typography-line-height-lg);
 	list-style: none;
 	padding: 0;
@@ -18,7 +17,7 @@
 	li:not(:last-child)::after {
 		content: "/";
 		margin: 0 var(--wpds-dimension-gap-sm);
-		color: var(--wpds-color-fg-content-neutral-weak);
+		color: var(--wpds-color-stroke-surface-neutral);
 		font-weight: var(--wpds-typography-font-weight-regular);
 	}
 }
