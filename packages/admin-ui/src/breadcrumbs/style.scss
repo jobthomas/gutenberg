@@ -1,5 +1,4 @@
 .admin-ui-breadcrumbs__list {
-	// @TODO: use Text component from UI when available.
 	font-family: var(--wpds-typography-font-family-heading);
 	font-size: var(--wpds-typography-font-size-lg);
 	font-weight: var(--wpds-typography-font-weight-medium);
@@ -7,19 +6,19 @@
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	// gap prop don't seem to be working properly.
-	gap: 0;
 	min-height: 32px;
+
+	// @TODO: Remove once `Text` supports truncation natively.
+	.admin-ui-breadcrumbs__current {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
 	li:not(:last-child)::after {
 		content: "/";
 		margin: 0 var(--wpds-dimension-gap-sm);
 		color: var(--wpds-color-fg-content-neutral-weak);
-		font-weight: var(--wpds-font-weight-regular);
-	}
-
-	h1 {
-		font-size: inherit;
-		line-height: inherit;
+		font-weight: var(--wpds-typography-font-weight-regular);
 	}
 }
