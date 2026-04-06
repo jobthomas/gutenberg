@@ -125,11 +125,10 @@ function ParagraphBlock( {
 	const isEmpty = RichText.isEmpty( content );
 	const hasSlashReplacements = useSelect(
 		( select ) =>
-			isEmpty &&
 			unlock( select( blockEditorStore ) ).hasSlashCommandReplacements(
 				clientId
 			),
-		[ clientId, isEmpty ]
+		[ clientId ]
 	);
 	const emptyAriaLabel = hasSlashReplacements
 		? __(
