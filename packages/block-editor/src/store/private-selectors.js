@@ -3,6 +3,7 @@
  */
 import { createSelector, createRegistrySelector } from '@wordpress/data';
 import {
+	getBlockTypes,
 	hasBlockSupport,
 	privateApis as blocksPrivateApis,
 } from '@wordpress/blocks';
@@ -16,6 +17,7 @@ import {
 	getBlockEditingMode,
 	getSettings,
 	canInsertBlockType,
+	canIncludeBlockTypeInInserter,
 	getBlockName,
 	getTemplateLock,
 	getClientIdsWithDescendants,
@@ -1052,3 +1054,46 @@ export function getViewportModalClientIds( state ) {
 export function getRequestedInspectorTab( state ) {
 	return state.requestedInspectorTab;
 }
+
+/**
+ * Returns whether a block can use the slash command to insert or replace with
+ * another block type. Returns false when no other block type can be inserted
+ * in the same parent context — for example when the editor's allowedBlockTypes
+ * setting or a parent block's allowedBlocks setting restricts insertable types
+ * to only the current block, or when the block is inside a content-only section
+ * (unsynced pattern / templateLock:'contentOnly') where only content-role blocks
+ * are permitted and none are available.
+ *
+ * @param {Object} state    Editor state.
+ * @param {string} clientId Client ID of the block.
+ *
+ * @return {boolean} Whether the slash command can offer block replacements.
+ */
+export const hasSlashCommandReplacements = createSelector(
+	( state, clientId ) => {
+		const blockName = getBlockName( state, clientId );
+		if ( ! blockName ) {
+			return false;
+		}
+
+		const rootClientId = getBlockRootClientId( state, clientId );
+
+		// Return true as soon as we find any other insertable block type.
+		// canIncludeBlockTypeInInserter already accounts for content-only
+		// section restrictions (#76982) and allowedBlockTypes / parent
+		// allowedBlocks settings (#55378).
+		return getBlockTypes().some(
+			( blockType ) =>
+				blockType.name !== blockName &&
+				canIncludeBlockTypeInInserter( state, blockType, rootClientId )
+		);
+	},
+	( state, clientId ) => {
+		const rootClientId = getBlockRootClientId( state, clientId );
+		return [
+			getBlockName( state, clientId ),
+			getBlockTypes(),
+			...getInsertBlockTypeDependants()( state, rootClientId ),
+		];
+	}
+);

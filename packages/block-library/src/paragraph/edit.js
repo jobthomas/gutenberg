@@ -28,6 +28,7 @@ import { formatLTR } from '@wordpress/icons';
  * Internal dependencies
  */
 import { useOnEnter } from './use-enter';
+import { unlock } from '../lock-unlock';
 import useDeprecatedAlign from './deprecated-attributes';
 
 function ParagraphRTLControl( { direction, setDirection } ) {
@@ -125,7 +126,7 @@ function ParagraphBlock( {
 	const hasSlashReplacements = useSelect(
 		( select ) =>
 			isEmpty &&
-			select( blockEditorStore ).__unstableHasSlashCommandReplacements(
+			unlock( select( blockEditorStore ) ).hasSlashCommandReplacements(
 				clientId
 			),
 		[ clientId, isEmpty ]

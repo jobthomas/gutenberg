@@ -32,6 +32,20 @@ _Returns_
 
 -   `boolean`: Whether the given block is allowed to be edited.
 
+### canIncludeBlockTypeInInserter
+
+Returns whether we can show a block type in the inserter
+
+_Parameters_
+
+-   _state_ `Object`: Global State
+-   _blockType_ `Object`: BlockType
+-   _rootClientId_ `?string`: Optional root client ID of block list.
+
+_Returns_
+
+-   `boolean`: Whether the given block type is allowed to be shown in the inserter.
+
 ### canInsertBlocks
 
 Determines if the given blocks are allowed to be inserted into the block list.

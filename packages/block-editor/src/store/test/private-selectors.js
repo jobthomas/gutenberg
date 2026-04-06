@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { registerBlockType, unregisterBlockType } from '@wordpress/blocks';
+import { select, dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -24,9 +25,12 @@ import {
 	getViewportModalClientIds,
 	isSectionBlock,
 	getParentSectionBlock,
+	hasSlashCommandReplacements,
 } from '../private-selectors';
 import { getBlockEditingMode } from '../selectors';
-import { deviceTypeKey } from '../private-keys';
+import { store } from '../';
+import { unlock } from '../../lock-unlock';
+import { deviceTypeKey, sectionRootClientIdKey } from '../private-keys';
 
 describe( 'private selectors', () => {
 	describe( 'isBlockInterfaceHidden', () => {
@@ -1683,6 +1687,139 @@ describe( 'private selectors', () => {
 			// pattern-a is not being edited, so inner-block still has pattern-a as parent
 			expect( getParentSectionBlock( state, 'inner-block' ) ).toBe(
 				'pattern-a'
+			);
+		} );
+	} );
+
+	describe( 'hasSlashCommandReplacements', () => {
+		beforeEach( () => {
+			registerBlockType( 'core/test-block-a', {
+				apiVersion: 3,
+				save: ( props ) => props.attributes.text,
+				category: 'design',
+				title: 'Test Block A',
+				icon: 'test',
+				keywords: [ 'testing' ],
+			} );
+			registerBlockType( 'core/test-block-b', {
+				apiVersion: 3,
+				save: ( props ) => props.attributes.text,
+				category: 'text',
+				title: 'Test Block B',
+				icon: 'test',
+				keywords: [ 'testing' ],
+			} );
+		} );
+
+		afterEach( async () => {
+			await dispatch( store ).resetBlocks( [] );
+			await dispatch( store ).updateSettings( {
+				allowedBlockTypes: undefined,
+			} );
+			unregisterBlockType( 'core/test-block-a' );
+			unregisterBlockType( 'core/test-block-b' );
+		} );
+
+		it( 'returns true when other block types can be inserted (default case)', async () => {
+			await dispatch( store ).resetBlocks( [
+				{
+					clientId: 'para',
+					name: 'core/test-block-a',
+					attributes: {},
+					innerBlocks: [],
+				},
+			] );
+
+			expect(
+				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+			).toBe( true );
+		} );
+
+		it( 'returns false when allowedBlockTypes restricts to only the current block (#55378)', async () => {
+			await dispatch( store ).updateSettings( {
+				allowedBlockTypes: [ 'core/test-block-a' ],
+			} );
+			await dispatch( store ).resetBlocks( [
+				{
+					clientId: 'para',
+					name: 'core/test-block-a',
+					attributes: {},
+					innerBlocks: [],
+				},
+			] );
+
+			expect(
+				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+			).toBe( false );
+		} );
+
+		it( 'returns false when parent allowedBlocks restricts to only the current block (#55378)', async () => {
+			// Use core/test-block-a as the container — no registered test block
+			// declares it as a required parent, so the allowedBlocks restriction
+			// is the only thing that controls insertion here.
+			await dispatch( store ).resetBlocks( [
+				{
+					clientId: 'container',
+					name: 'core/test-block-a',
+					attributes: {},
+					innerBlocks: [
+						{
+							clientId: 'para',
+							name: 'core/test-block-b',
+							attributes: {},
+							innerBlocks: [],
+						},
+					],
+				},
+			] );
+			await dispatch( store ).updateBlockListSettings( 'container', {
+				allowedBlocks: [ 'core/test-block-b' ],
+			} );
+
+			expect(
+				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+			).toBe( false );
+		} );
+
+		it( 'returns false when paragraph is inside a content-only section (unsynced pattern) (#76982)', () => {
+			// A block with templateLock:'contentOnly' whose parent does NOT
+			// also have contentOnly is treated as a section block. Inside it,
+			// canIncludeBlockTypeInInserter returns false for any block type
+			// that isn't a content-role block — so the slash inserter would
+			// show nothing useful and the placeholder should not hint at it.
+			const state = {
+				blocks: {
+					byClientId: new Map( [
+						[ 'section', { name: 'core/test-block-b' } ],
+						[ 'para', { name: 'core/test-block-a' } ],
+					] ),
+					attributes: new Map( [
+						[ 'section', {} ],
+						[ 'para', {} ],
+					] ),
+					parents: new Map( [
+						[ 'section', '' ],
+						[ 'para', 'section' ],
+					] ),
+					order: new Map( [
+						[ '', [ 'section' ] ],
+						[ 'section', [ 'para' ] ],
+					] ),
+					blockEditingModes: new Map(),
+				},
+				blockListSettings: {
+					section: { templateLock: 'contentOnly' },
+				},
+				settings: {
+					[ sectionRootClientIdKey ]: '',
+				},
+				derivedBlockEditingModes: new Map(),
+				preferences: { insertUsage: {} },
+				editedContentOnlySection: null,
+			};
+
+			expect( hasSlashCommandReplacements( state, 'para' ) ).toBe(
+				false
 			);
 		} );
 	} );
