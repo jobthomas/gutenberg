@@ -117,7 +117,7 @@ export default defineConfig( {
 					patterns: [ /^wpds-dimension\.gap\.([^.]+)$/ ],
 				},
 				{
-					name: 'Size',
+					name: 'ElementSize',
 					description: 'Size scale for element sizing tokens.',
 					patterns: [ /^wpds-dimension\.size\.([^.]+)$/ ],
 				},
