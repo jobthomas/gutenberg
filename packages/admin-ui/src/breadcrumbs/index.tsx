@@ -50,7 +50,11 @@ export const Breadcrumbs = ( { items }: BreadcrumbsProps ) => {
 	}
 
 	return (
-		<nav aria-label={ __( 'Breadcrumbs' ) }>
+		<Text
+			variant="body-lg"
+			render={ <nav /> }
+			aria-label={ __( 'Breadcrumbs' ) }
+		>
 			<Stack
 				render={ <ul /> }
 				direction="row"
@@ -88,7 +92,7 @@ export const Breadcrumbs = ( { items }: BreadcrumbsProps ) => {
 					) }
 				</li>
 			</Stack>
-		</nav>
+		</Text>
 	);
 };
 
