@@ -25,7 +25,7 @@ import {
 	getViewportModalClientIds,
 	isSectionBlock,
 	getParentSectionBlock,
-	hasSlashCommandReplacements,
+	hasSlashCommandReplacementsForContext,
 } from '../private-selectors';
 import { getBlockEditingMode } from '../selectors';
 import { store } from '../';
@@ -1691,7 +1691,7 @@ describe( 'private selectors', () => {
 		} );
 	} );
 
-	describe( 'hasSlashCommandReplacements', () => {
+	describe( 'hasSlashCommandReplacementsForContext', () => {
 		beforeEach( () => {
 			registerBlockType( 'core/test-block-a', {
 				apiVersion: 3,
@@ -1720,43 +1720,33 @@ describe( 'private selectors', () => {
 			unregisterBlockType( 'core/test-block-b' );
 		} );
 
-		it( 'returns true when other block types can be inserted (default case)', async () => {
-			await dispatch( store ).resetBlocks( [
-				{
-					clientId: 'para',
-					name: 'core/test-block-a',
-					attributes: {},
-					innerBlocks: [],
-				},
-			] );
+		it( 'returns true when 2+ block types can be inserted (default case)', async () => {
+			// Both test blocks are registered and no restrictions apply —
+			// the root context has 2+ insertable types.
+			await dispatch( store ).resetBlocks( [] );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
+					undefined
+				)
 			).toBe( true );
 		} );
 
-		it( 'returns false when allowedBlockTypes restricts to only the current block (#55378)', async () => {
+		it( 'returns false when allowedBlockTypes restricts to only one type', async () => {
 			await dispatch( store ).updateSettings( {
 				allowedBlockTypes: [ 'core/test-block-a' ],
 			} );
-			await dispatch( store ).resetBlocks( [
-				{
-					clientId: 'para',
-					name: 'core/test-block-a',
-					attributes: {},
-					innerBlocks: [],
-				},
-			] );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
+					undefined
+				)
 			).toBe( false );
 		} );
 
-		it( 'returns false when parent allowedBlocks restricts to only the current block (#55378)', async () => {
-			// Use core/test-block-a as the container — no registered test block
-			// declares it as a required parent, so the allowedBlocks restriction
-			// is the only thing that controls insertion here.
+		it( 'returns false when parent allowedBlocks restricts to only one type', async () => {
+			// container allows only core/test-block-b, so its inner block list
+			// has fewer than 2 insertable types.
 			await dispatch( store ).resetBlocks( [
 				{
 					clientId: 'container',
@@ -1777,16 +1767,17 @@ describe( 'private selectors', () => {
 			} );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacements( 'para' )
+				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
+					'container'
+				)
 			).toBe( false );
 		} );
 
-		it( 'returns false when paragraph is inside a content-only section (unsynced pattern) (#76982)', () => {
+		it( 'returns false when inside a content-only section (unsynced pattern)', () => {
 			// A block with templateLock:'contentOnly' whose parent does NOT
 			// also have contentOnly is treated as a section block. Inside it,
 			// canIncludeBlockTypeInInserter returns false for any block type
-			// that isn't a content-role block — so the slash inserter would
-			// show nothing useful and the placeholder should not hint at it.
+			// that isn't a content-role block, so the count never reaches 2.
 			const state = {
 				blocks: {
 					byClientId: new Map( [
@@ -1818,9 +1809,9 @@ describe( 'private selectors', () => {
 				editedContentOnlySection: null,
 			};
 
-			expect( hasSlashCommandReplacements( state, 'para' ) ).toBe(
-				false
-			);
+			expect(
+				hasSlashCommandReplacementsForContext( state, 'section' )
+			).toBe( false );
 		} );
 	} );
 } );

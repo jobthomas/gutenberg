@@ -19,9 +19,9 @@ import {
 	useBlockProps,
 	useSettings,
 	useBlockEditingMode,
-	store as blockEditorStore,
+	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
-import { useSelect } from '@wordpress/data';
+import { useContext } from '@wordpress/element';
 import { getBlockSupport } from '@wordpress/blocks';
 import { formatLTR } from '@wordpress/icons';
 /**
@@ -30,6 +30,8 @@ import { formatLTR } from '@wordpress/icons';
 import { useOnEnter } from './use-enter';
 import { unlock } from '../lock-unlock';
 import useDeprecatedAlign from './deprecated-attributes';
+
+const { SlashInserterContext } = unlock( blockEditorPrivateApis );
 
 function ParagraphRTLControl( { direction, setDirection } ) {
 	return (
@@ -123,13 +125,7 @@ function ParagraphBlock( {
 	} );
 	const blockEditingMode = useBlockEditingMode();
 	const isEmpty = RichText.isEmpty( content );
-	const hasSlashReplacements = useSelect(
-		( select ) =>
-			unlock( select( blockEditorStore ) ).hasSlashCommandReplacements(
-				clientId
-			),
-		[ clientId ]
-	);
+	const hasSlashReplacements = useContext( SlashInserterContext );
 	const emptyAriaLabel = hasSlashReplacements
 		? __(
 				'Empty block; start writing or type forward slash to choose a block'

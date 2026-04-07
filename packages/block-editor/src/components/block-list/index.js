@@ -42,6 +42,12 @@ import { unlock } from '../../lock-unlock';
 export const IntersectionObserver = createContext();
 IntersectionObserver.displayName = 'IntersectionObserverContext';
 
+// Provides whether the slash command can offer block replacements for the
+// current block list context. Defaults to true so blocks outside a managed
+// block list (e.g. native / test environments) show the slash placeholder.
+export const SlashInserterContext = createContext( true );
+SlashInserterContext.displayName = 'SlashInserterContext';
+
 const pendingBlockVisibilityUpdatesPerRegistry = new WeakMap();
 const delayedBlockVisibilityDebounceOptions = {
 	trailing: true,
@@ -192,6 +198,7 @@ function Items( {
 		selectedBlocks,
 		visibleBlocks,
 		shouldRenderAppender,
+		hasSlashReplacements,
 	} = useSelect(
 		( select ) => {
 			const {
@@ -206,6 +213,7 @@ function Items( {
 				getBlockName,
 				isZoomOut: _isZoomOut,
 				canInsertBlockType,
+				hasSlashCommandReplacementsForContext,
 			} = unlock( select( blockEditorStore ) );
 
 			const _order = getBlockOrder( rootClientId );
@@ -254,52 +262,56 @@ function Items( {
 					( hasCustomAppender ||
 						hasSelectedRoot ||
 						showRootAppender ),
+				hasSlashReplacements:
+					hasSlashCommandReplacementsForContext( rootClientId ),
 			};
 		},
 		[ rootClientId, hasAppender, hasCustomAppender ]
 	);
 
 	return (
-		<LayoutProvider value={ layout }>
-			{ order.map( ( clientId ) => (
-				<AsyncModeProvider
-					key={ clientId }
-					value={
-						// Only provide data asynchronously if the block is
-						// not visible and not selected.
-						! visibleBlocks.has( clientId ) &&
-						! selectedBlocks.includes( clientId )
-					}
-				>
-					{ isZoomOut && (
-						<ZoomOutSeparator
-							clientId={ clientId }
+		<SlashInserterContext.Provider value={ hasSlashReplacements }>
+			<LayoutProvider value={ layout }>
+				{ order.map( ( clientId ) => (
+					<AsyncModeProvider
+						key={ clientId }
+						value={
+							// Only provide data asynchronously if the block is
+							// not visible and not selected.
+							! visibleBlocks.has( clientId ) &&
+							! selectedBlocks.includes( clientId )
+						}
+					>
+						{ isZoomOut && (
+							<ZoomOutSeparator
+								clientId={ clientId }
+								rootClientId={ rootClientId }
+								position="top"
+							/>
+						) }
+						<BlockListBlock
 							rootClientId={ rootClientId }
-							position="top"
+							clientId={ clientId }
 						/>
-					) }
-					<BlockListBlock
+						{ isZoomOut && (
+							<ZoomOutSeparator
+								clientId={ clientId }
+								rootClientId={ rootClientId }
+								position="bottom"
+							/>
+						) }
+					</AsyncModeProvider>
+				) ) }
+				{ order.length < 1 && placeholder }
+				{ shouldRenderAppender && (
+					<BlockListAppender
+						tagName={ __experimentalAppenderTagName }
 						rootClientId={ rootClientId }
-						clientId={ clientId }
+						CustomAppender={ CustomAppender }
 					/>
-					{ isZoomOut && (
-						<ZoomOutSeparator
-							clientId={ clientId }
-							rootClientId={ rootClientId }
-							position="bottom"
-						/>
-					) }
-				</AsyncModeProvider>
-			) ) }
-			{ order.length < 1 && placeholder }
-			{ shouldRenderAppender && (
-				<BlockListAppender
-					tagName={ __experimentalAppenderTagName }
-					rootClientId={ rootClientId }
-					CustomAppender={ CustomAppender }
-				/>
-			) }
-		</LayoutProvider>
+				) }
+			</LayoutProvider>
+		</SlashInserterContext.Provider>
 	);
 }
 

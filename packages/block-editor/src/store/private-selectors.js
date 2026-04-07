@@ -1056,44 +1056,39 @@ export function getRequestedInspectorTab( state ) {
 }
 
 /**
- * Returns whether a block can use the slash command to insert or replace with
- * another block type. Returns false when no other block type can be inserted
- * in the same parent context — for example when the editor's allowedBlockTypes
- * setting or a parent block's allowedBlocks setting restricts insertable types
- * to only the current block, or when the block is inside a content-only section
- * (unsynced pattern / templateLock:'contentOnly') where only content-role blocks
- * are permitted and none are available.
+ * Returns whether a block list context has two or more insertable block types,
+ * meaning any block within the list can use the slash command to replace itself
+ * with an alternative type. When fewer than two types are insertable — for
+ * example due to an allowedBlocks restriction, or a content-only templateLock
+ * with no content-role container — the slash inserter cannot offer useful
+ * replacements.
  *
- * @param {Object} state    Editor state.
- * @param {string} clientId Client ID of the block.
+ * Two or more insertable types guarantees that for any given block type in the
+ * list, at least one *other* type is available, so the slash placeholder is
+ * always accurate without needing to know the individual block's name.
  *
- * @return {boolean} Whether the slash command can offer block replacements.
+ * @param {Object}      state        Editor state.
+ * @param {string|null} rootClientId Root client ID of the block list.
+ *
+ * @return {boolean} Whether 2+ block types are insertable in this context.
  */
-export const hasSlashCommandReplacements = createSelector(
-	( state, clientId ) => {
-		const blockName = getBlockName( state, clientId );
-		if ( ! blockName ) {
-			return false;
-		}
-
-		const rootClientId = getBlockRootClientId( state, clientId );
-
-		// Return true as soon as we find any other insertable block type.
-		// canIncludeBlockTypeInInserter already accounts for content-only
-		// section restrictions (#76982) and allowedBlockTypes / parent
-		// allowedBlocks settings (#55378).
-		return getBlockTypes().some(
-			( blockType ) =>
-				blockType.name !== blockName &&
+export const hasSlashCommandReplacementsForContext = createSelector(
+	( state, rootClientId ) => {
+		let count = 0;
+		for ( const blockType of getBlockTypes() ) {
+			if (
 				canIncludeBlockTypeInInserter( state, blockType, rootClientId )
-		);
+			) {
+				count++;
+				if ( count >= 2 ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	},
-	( state, clientId ) => {
-		const rootClientId = getBlockRootClientId( state, clientId );
-		return [
-			getBlockName( state, clientId ),
-			getBlockTypes(),
-			...getInsertBlockTypeDependants()( state, rootClientId ),
-		];
-	}
+	( state, rootClientId ) => [
+		getBlockTypes(),
+		...getInsertBlockTypeDependants()( state, rootClientId ),
+	]
 );
