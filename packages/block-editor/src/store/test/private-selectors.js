@@ -1,7 +1,11 @@
 /**
  * WordPress dependencies
  */
-import { registerBlockType, unregisterBlockType } from '@wordpress/blocks';
+import {
+	getDefaultBlockName,
+	registerBlockType,
+	unregisterBlockType,
+} from '@wordpress/blocks';
 import { select, dispatch } from '@wordpress/data';
 
 /**
@@ -25,7 +29,7 @@ import {
 	getViewportModalClientIds,
 	isSectionBlock,
 	getParentSectionBlock,
-	hasSlashCommandReplacementsForContext,
+	hasSlashInserterItems,
 } from '../private-selectors';
 import { getBlockEditingMode } from '../selectors';
 import { store } from '../';
@@ -1691,7 +1695,7 @@ describe( 'private selectors', () => {
 		} );
 	} );
 
-	describe( 'hasSlashCommandReplacementsForContext', () => {
+	describe( 'hasSlashInserterItems', () => {
 		beforeEach( () => {
 			registerBlockType( 'core/test-block-a', {
 				apiVersion: 3,
@@ -1720,33 +1724,44 @@ describe( 'private selectors', () => {
 			unregisterBlockType( 'core/test-block-b' );
 		} );
 
-		it( 'returns true when 2+ block types can be inserted (default case)', async () => {
-			// Both test blocks are registered and no restrictions apply —
-			// the root context has 2+ insertable types.
+		it( 'returns true when non-default block types can be inserted (default case)', async () => {
 			await dispatch( store ).resetBlocks( [] );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
-					undefined
-				)
+				unlock( select( store ) ).hasSlashInserterItems( undefined )
 			).toBe( true );
 		} );
 
-		it( 'returns false when allowedBlockTypes restricts to only one type', async () => {
+		it( 'returns true when only a single non-default block type is allowed', async () => {
+			// Even with only one non-default block insertable, a paragraph can
+			// still use the slash inserter to switch to it.
 			await dispatch( store ).updateSettings( {
 				allowedBlockTypes: [ 'core/test-block-a' ],
 			} );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
-					undefined
-				)
+				unlock( select( store ) ).hasSlashInserterItems( undefined )
+			).toBe( true );
+		} );
+
+		it( 'returns false when only the default block type is allowed', async () => {
+			// When allowedBlockTypes is restricted to just the default block,
+			// no non-default block can be inserted, so the slash inserter
+			// has nothing to offer.
+			await dispatch( store ).updateSettings( {
+				allowedBlockTypes: [ getDefaultBlockName() ],
+			} );
+
+			expect(
+				unlock( select( store ) ).hasSlashInserterItems( undefined )
 			).toBe( false );
 		} );
 
-		it( 'returns false when parent allowedBlocks restricts to only one type', async () => {
-			// container allows only core/test-block-b, so its inner block list
-			// has fewer than 2 insertable types.
+		it( 'returns true when parent allowedBlocks contains a non-default block type', async () => {
+			// A container whose allowedBlocks = ['core/test-block-b'] means
+			// test-block-b (a non-default block) is insertable. A paragraph
+			// inside this container can switch to test-block-b via the slash
+			// inserter, so the result should be true.
 			await dispatch( store ).resetBlocks( [
 				{
 					clientId: 'container',
@@ -1767,17 +1782,15 @@ describe( 'private selectors', () => {
 			} );
 
 			expect(
-				unlock( select( store ) ).hasSlashCommandReplacementsForContext(
-					'container'
-				)
-			).toBe( false );
+				unlock( select( store ) ).hasSlashInserterItems( 'container' )
+			).toBe( true );
 		} );
 
 		it( 'returns false when inside a content-only section (unsynced pattern)', () => {
 			// A block with templateLock:'contentOnly' whose parent does NOT
 			// also have contentOnly is treated as a section block. Inside it,
 			// canIncludeBlockTypeInInserter returns false for any block type
-			// that isn't a content-role block, so the count never reaches 2.
+			// that isn't a content-role block, so no non-default block passes.
 			const state = {
 				blocks: {
 					byClientId: new Map( [
@@ -1809,9 +1822,7 @@ describe( 'private selectors', () => {
 				editedContentOnlySection: null,
 			};
 
-			expect(
-				hasSlashCommandReplacementsForContext( state, 'section' )
-			).toBe( false );
+			expect( hasSlashInserterItems( state, 'section' ) ).toBe( false );
 		} );
 	} );
 } );

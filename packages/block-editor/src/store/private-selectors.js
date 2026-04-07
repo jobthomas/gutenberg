@@ -4,6 +4,7 @@
 import { createSelector, createRegistrySelector } from '@wordpress/data';
 import {
 	getBlockTypes,
+	getDefaultBlockName,
 	hasBlockSupport,
 	privateApis as blocksPrivateApis,
 } from '@wordpress/blocks';
@@ -1056,36 +1057,26 @@ export function getRequestedInspectorTab( state ) {
 }
 
 /**
- * Returns whether a block list context has two or more insertable block types,
- * meaning any block within the list can use the slash command to replace itself
- * with an alternative type. When fewer than two types are insertable — for
- * example due to an allowedBlocks restriction, or a content-only templateLock
- * with no content-role container — the slash inserter cannot offer useful
- * replacements.
- *
- * Two or more insertable types guarantees that for any given block type in the
- * list, at least one *other* type is available, so the slash placeholder is
- * always accurate without needing to know the individual block's name.
+ * Determines whether there are items to show in the slash inserter for a given
+ * block list context. Unlike `hasInserterItems`, this excludes the default
+ * block type (usually paragraph) — because the slash inserter is used to
+ * *replace* the current block with a different type, so showing it only makes
+ * sense when at least one non-default type is actually insertable. Returns
+ * false when the only insertable type is the default block, for example due to
+ * an `allowedBlocks` restriction or a content-only `templateLock`.
  *
  * @param {Object}      state        Editor state.
  * @param {string|null} rootClientId Root client ID of the block list.
  *
- * @return {boolean} Whether 2+ block types are insertable in this context.
+ * @return {boolean} Whether slash inserter items exist for this context.
  */
-export const hasSlashCommandReplacementsForContext = createSelector(
+export const hasSlashInserterItems = createSelector(
 	( state, rootClientId ) => {
-		let count = 0;
-		for ( const blockType of getBlockTypes() ) {
-			if (
+		return getBlockTypes().some(
+			( blockType ) =>
+				blockType.name !== getDefaultBlockName() &&
 				canIncludeBlockTypeInInserter( state, blockType, rootClientId )
-			) {
-				count++;
-				if ( count >= 2 ) {
-					return true;
-				}
-			}
-		}
-		return false;
+		);
 	},
 	( state, rootClientId ) => [
 		getBlockTypes(),

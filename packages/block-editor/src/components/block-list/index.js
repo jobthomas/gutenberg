@@ -213,7 +213,7 @@ function Items( {
 				getBlockName,
 				isZoomOut: _isZoomOut,
 				canInsertBlockType,
-				hasSlashCommandReplacementsForContext,
+				hasSlashInserterItems,
 			} = unlock( select( blockEditorStore ) );
 
 			const _order = getBlockOrder( rootClientId );
@@ -262,8 +262,7 @@ function Items( {
 					( hasCustomAppender ||
 						hasSelectedRoot ||
 						showRootAppender ),
-				hasSlashReplacements:
-					hasSlashCommandReplacementsForContext( rootClientId ),
+				hasSlashReplacements: hasSlashInserterItems( rootClientId ),
 			};
 		},
 		[ rootClientId, hasAppender, hasCustomAppender ]
