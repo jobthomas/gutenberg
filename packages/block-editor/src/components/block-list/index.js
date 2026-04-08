@@ -181,21 +181,6 @@ export default function BlockList( settings ) {
 const EMPTY_ARRAY = [];
 const EMPTY_SET = new Set();
 
-function SlashInserterContextProvider( { rootClientId, children } ) {
-	const hasSlashItems = useSelect(
-		( select ) =>
-			unlock( select( blockEditorStore ) ).hasSlashInserterItems(
-				rootClientId
-			),
-		[ rootClientId ]
-	);
-	return (
-		<SlashInserterContext.Provider value={ hasSlashItems }>
-			{ children }
-		</SlashInserterContext.Provider>
-	);
-}
-
 function Items( {
 	placeholder,
 	rootClientId,
@@ -213,6 +198,7 @@ function Items( {
 		selectedBlocks,
 		visibleBlocks,
 		shouldRenderAppender,
+		hasSlashReplacements,
 	} = useSelect(
 		( select ) => {
 			const {
@@ -227,6 +213,7 @@ function Items( {
 				getBlockName,
 				isZoomOut: _isZoomOut,
 				canInsertBlockType,
+				hasSlashInserterItems,
 			} = unlock( select( blockEditorStore ) );
 
 			const _order = getBlockOrder( rootClientId );
@@ -275,13 +262,14 @@ function Items( {
 					( hasCustomAppender ||
 						hasSelectedRoot ||
 						showRootAppender ),
+				hasSlashReplacements: hasSlashInserterItems( rootClientId ),
 			};
 		},
 		[ rootClientId, hasAppender, hasCustomAppender ]
 	);
 
 	return (
-		<SlashInserterContextProvider rootClientId={ rootClientId }>
+		<SlashInserterContext.Provider value={ hasSlashReplacements }>
 			<LayoutProvider value={ layout }>
 				{ order.map( ( clientId ) => (
 					<AsyncModeProvider
@@ -322,7 +310,7 @@ function Items( {
 					/>
 				) }
 			</LayoutProvider>
-		</SlashInserterContextProvider>
+		</SlashInserterContext.Provider>
 	);
 }
 
