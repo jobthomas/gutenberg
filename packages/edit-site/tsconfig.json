@@ -39,6 +39,7 @@
 		{ "path": "../rich-text" },
 		{ "path": "../router" },
 		{ "path": "../style-engine" },
+		{ "path": "../ui" },
 		{ "path": "../url" },
 		{ "path": "../views" },
 		{ "path": "../wordcount" }
