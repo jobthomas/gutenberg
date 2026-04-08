@@ -1079,7 +1079,7 @@ export const hasSlashInserterItems = createSelector(
 		);
 	},
 	( state, rootClientId ) => [
-		state.settings.allowedBlockTypes,
-		state.blockListSettings[ rootClientId ],
+		getBlockTypes(),
+		...getInsertBlockTypeDependants()( state, rootClientId ),
 	]
 );
