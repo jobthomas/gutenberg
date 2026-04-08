@@ -9,6 +9,7 @@
 ### Bug Fixes
 
 - DataViews: Fix `compact` density clipping and remove top/bottom padding. [#77054](https://github.com/WordPress/gutenberg/pull/77054)
+- DataViews: Fix link styling in table layout when the title field itself is a link element. [#73489](https://github.com/WordPress/gutenberg/pull/73489)
 
 ## 14.0.0 (2026-04-01)
 
