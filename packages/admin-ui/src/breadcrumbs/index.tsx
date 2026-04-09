@@ -80,7 +80,6 @@ export const Breadcrumbs = ( { items }: BreadcrumbsProps ) => {
 							{ lastItem.label }
 						</Link>
 					) : (
-						/* eslint-disable jsx-a11y/heading-has-content */
 						<Text
 							variant="heading-lg"
 							render={ <h1 /> }
@@ -88,7 +87,6 @@ export const Breadcrumbs = ( { items }: BreadcrumbsProps ) => {
 						>
 							{ lastItem.label }
 						</Text>
-						/* eslint-enable jsx-a11y/heading-has-content */
 					) }
 				</li>
 			</Stack>
