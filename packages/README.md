@@ -325,7 +325,7 @@ Gutenberg uses TypeScript for several reasons, including:
 
 ### Using TypeScript
 
-Gutenberg uses TypeScript by running the TypeScript compiler (`tsc`) on select packages.
+Gutenberg uses TypeScript by running the TypeScript compiler (`tsgo`) on select packages.
 These packages benefit from type checking and produced type declarations in the published packages.
 
 To opt-in to TypeScript tooling, packages should include a `tsconfig.json` file in the package root and add an entry to the root `tsconfig.json` references.

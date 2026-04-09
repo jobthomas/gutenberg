@@ -149,11 +149,11 @@ async function dev() {
 
 		// Step 4: Build TypeScript types
 		console.log( '\n📘 Building TypeScript types...' );
-		await exec( 'tsc', [ '--build' ] ).catch( () => {
+		await exec( 'tsgo', [ '--build' ] ).catch( () => {
 			console.error(
-				'\n❌ TypeScript compilation failed. Try cleaning up first: `npm run clean:package-types`'
+				'\n❌ TypeScript compilation via tsgo failed. Try cleaning up first: `npm run clean:package-types`'
 			);
-			throw new Error( 'TypeScript compilation failed' );
+			throw new Error( 'TypeScript compilation via tsgo failed' );
 		} );
 
 		// Step 5: Check build type declaration files
@@ -179,7 +179,7 @@ async function dev() {
 		console.log( '   - Package builder watching for source changes\n' );
 
 		// Start TypeScript watch
-		const tscWatch = execAsync( 'tsc', [
+		const tsgoWatch = execAsync( 'tsgo', [
 			'--build',
 			'--watch',
 			'--preserveWatchOutput',
@@ -198,7 +198,7 @@ async function dev() {
 		// Handle process termination
 		const cleanup = () => {
 			console.log( '\n\n👋 Stopping watch mode...' );
-			tscWatch.kill();
+			tsgoWatch.kill();
 			buildWatch.kill();
 			readyMarkerFile.cleanup();
 			process.exit( 0 );

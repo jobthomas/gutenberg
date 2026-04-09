@@ -3,7 +3,7 @@
  * builds types and also sets checkJs to false in its tsconfig.json. (This scenario
  * can cause unchecked errors in JS files to be included in the compiled types.)
  *
- * We do so by running `tsc --noEmit` on the $package/build-types/index.d.ts file.
+ * We do so by running `tsgo --noEmit` on the $package/build-types/index.d.ts file.
  * This also verifies everything index.d.ts references, so it checks the entire
  * public api of the type declarations for that package.
  *
@@ -61,7 +61,7 @@ async function getDecFile( packagePath ) {
 		return decFile;
 	} catch {
 		console.error(
-			`Cannot access this declaration file. You may need to run tsc again: ${ decFile }`
+			`Cannot access this declaration file. You may need to run tsgo again: ${ decFile }`
 		);
 		process.exit( 1 );
 	}
@@ -70,7 +70,7 @@ async function getDecFile( packagePath ) {
 async function typecheckDeclarations( file ) {
 	return new Promise( ( resolve, reject ) => {
 		exec(
-			`npx tsc --ignoreConfig --target esnext --moduleResolution bundler --noEmit --skipLibCheck "${ file }"`,
+			`npx tsgo --ignoreConfig --target esnext --moduleResolution bundler --noEmit --skipLibCheck "${ file }"`,
 			( error, stdout, stderr ) => {
 				if ( error ) {
 					reject( { file, error, stderr, stdout } );
