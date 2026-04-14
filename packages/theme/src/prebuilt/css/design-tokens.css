@@ -141,22 +141,16 @@
 		0.2,
 		1
 	); /* General-purpose easing for on-screen movement like resizing, morphing, and layout shifts */
-	--wpds-motion-easing-dramatic: cubic-bezier(
-		0.29,
-		0,
-		0,
-		1
-	); /* High-impact easing for the most prominent, attention-grabbing transitions like dialogs and drawers */
 	--wpds-motion-easing-expressive: cubic-bezier(
-		0,
+		0.25,
 		0,
 		0,
 		1
-	); /* Noticeable easing that communicates spatial change, such as menus and popovers entering or exiting */
+	); /* Noticeable easing for enter/exit and spatial transitions like menus, popovers, dialogs, and drawers */
 	--wpds-motion-easing-subtle: cubic-bezier(
-		0.25,
-		0.1,
-		0.25,
+		0.15,
+		0,
+		0.15,
 		1
 	); /* Nearly imperceptible easing for hover, color, and background transitions */
 	--wpds-typography-font-family-body: -apple-system, system-ui, 'Segoe UI',

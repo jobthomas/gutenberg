@@ -147,9 +147,8 @@ export default {
 	'--wpds-motion-duration-xl': '400ms',
 	'--wpds-motion-duration-xs': '50ms',
 	'--wpds-motion-easing-balanced': 'cubic-bezier(0.4, 0, 0.2, 1)',
-	'--wpds-motion-easing-dramatic': 'cubic-bezier(0.29, 0, 0, 1)',
-	'--wpds-motion-easing-expressive': 'cubic-bezier(0, 0, 0, 1)',
-	'--wpds-motion-easing-subtle': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+	'--wpds-motion-easing-expressive': 'cubic-bezier(0.25, 0, 0, 1)',
+	'--wpds-motion-easing-subtle': 'cubic-bezier(0.15, 0, 0.15, 1)',
 	'--wpds-typography-font-family-body':
 		'-apple-system, system-ui, "Segoe UI", "Roboto", "Oxygen-Sans", "Ubuntu", "Cantarell", "Helvetica Neue", sans-serif',
 	'--wpds-typography-font-family-heading':
