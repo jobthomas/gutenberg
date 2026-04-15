@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+-   Admin UI: use UI Text component in header.
+
 ## 1.12.0 (2026-04-15)
 
 ### Enhancements
