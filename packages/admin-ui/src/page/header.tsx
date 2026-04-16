@@ -44,7 +44,7 @@ export default function Header( {
 						<Text
 							className="admin-ui-page__header-title"
 							render={ <HeadingTag /> }
-							variant="body-lg"
+							variant="heading-lg"
 						>
 							{ title }
 						</Text>
