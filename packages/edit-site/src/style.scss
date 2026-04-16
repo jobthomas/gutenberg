@@ -57,6 +57,7 @@ body.js #wpbody {
 
 body.js.appearance_page_gutenberg-template-parts,
 body.js.site-editor-php {
+	position: relative;
 	@include wp-admin-reset(".edit-site");
 }
 
@@ -67,6 +68,7 @@ body.js.site-editor-php {
 .edit-site {
 	@include reset;
 	height: 100vh;
+	isolation: isolate;
 
 	// On mobile the main content area has to scroll, otherwise you can invoke
 	// the over-scroll bounce on the non-scrolling container, for a bad experience.
