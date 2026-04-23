@@ -43,8 +43,8 @@ jobs:
             - name: Install Playwright system dependencies
               run: npx playwright install-deps
 
-            - name: Install WordPress Playwright E2E utils
-              run: npm install -D @wordpress/e2e-test-utils-playwright
+            - name: Build workspace packages
+              run: npm run build -- --skip-types
 
             # -----------------------------------------------------------------
             # 4️⃣ Start the WordPress test environment (Docker via wp‑env)
