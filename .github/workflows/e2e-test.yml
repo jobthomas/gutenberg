@@ -1,0 +1,75 @@
+name: Playwright E2E – Single Test
+
+on:
+    pull_request:
+        branches: [main] # run on every PR targeting the default branch
+    workflow_dispatch: # allow manual runs and later test‑path changes
+        inputs:
+            test-path:
+                description: |
+                    Relative path (or glob/pattern) of the Playwright test(s) to execute.
+                    The default points to a Playwright spec that exists in the repo.
+                required: true
+                default: test/e2e/specs/editor/blocks/paragraph.spec.js
+
+jobs:
+    e2e:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        steps:
+            # -----------------------------------------------------------------
+            # 1️⃣ Checkout the repository
+            # -----------------------------------------------------------------
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # -----------------------------------------------------------------
+            # 2️⃣ Set up Node (matches repository engines) and cache node_modules
+            # -----------------------------------------------------------------
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            # -----------------------------------------------------------------
+            # 3️⃣ Install dependencies (clean, reproducible)
+            # -----------------------------------------------------------------
+            - name: Install npm dependencies
+              run: npm ci
+
+            # -----------------------------------------------------------------
+            # 4️⃣ Start the WordPress test environment (Docker via wp‑env)
+            # -----------------------------------------------------------------
+            - name: Start wp‑env (Docker)
+              run: npm run wp-env-test -- start
+              # `wp-env-test` reads `.wp-env.test.json`, the CI‑ready config.
+
+            # -----------------------------------------------------------------
+            # 5️⃣ Run the selected Playwright test (Chromium only)
+            # -----------------------------------------------------------------
+            - name: Run Playwright test
+              env:
+                  PLAYWRIGHT_VIDEO: on # record video for every test
+              run: |
+                  TEST_PATH="${{ github.event.inputs.test-path }}"
+
+                  npx wp-scripts test-playwright \
+                    --config test/e2e/playwright.config.ts \
+                    "$TEST_PATH" \
+                    --project=chromium \
+                    --reporter html \
+                    --output=playwright-report
+
+            # -----------------------------------------------------------------
+            # 6️⃣ Upload all artifacts (videos, screenshots, traces, HTML report)
+            # -----------------------------------------------------------------
+            - name: Upload Playwright artifacts
+              if: always() # still upload when the test fails
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-artifacts
+                  path: |
+                      playwright-report/**   # HTML report (links to videos/traces)
+                      test-results/**        # Default Playwright output folder (videos, screenshots, traces)
