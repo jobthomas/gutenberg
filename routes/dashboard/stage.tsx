@@ -20,9 +20,11 @@ const importFromImportMap = new Function(
 	'return import( specifier );'
 ) as ( specifier: string ) => Promise< { default: ComponentType } >;
 
-const HelloWorldWidget = lazy( () =>
-	importFromImportMap( 'wp/widgets/hello-world/render' )
-);
+const HelloWorldWidget = lazy( () => {
+	// eslint-disable-next-line no-console
+	console.log( 'importing `hello-world` widget' );
+	return importFromImportMap( 'wp/widgets/hello-world/render' );
+} );
 
 function Dashboard() {
 	return (
