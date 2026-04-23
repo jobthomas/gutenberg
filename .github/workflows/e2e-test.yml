@@ -2,7 +2,8 @@ name: Playwright E2E – Single Test
 
 on:
     pull_request:
-        branches: [main] # run on every PR targeting the default branch
+        branches: [trunk] # run on every PR targeting the trunk branch
+        types: [opened, edited, synchronize, reopened]
     workflow_dispatch: # allow manual runs and later test‑path changes
         inputs:
             test-path:
