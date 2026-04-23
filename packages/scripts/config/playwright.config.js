@@ -22,7 +22,7 @@ const config = defineConfig( {
 	// Don't report slow test "files", as we will be running our tests in serial.
 	reportSlowTests: null,
 	testDir: './specs',
-	outputDir: path.join( process.env.WP_ARTIFACTS_PATH, 'test-results' ),
+	outputDir: path.join( process.cwd(), 'test-results' ),
 	snapshotPathTemplate:
 		'{testDir}/{testFileDir}/__snapshots__/{arg}-{projectName}{ext}',
 	globalSetup: require.resolve( './playwright/global-setup.js' ),
@@ -43,7 +43,7 @@ const config = defineConfig( {
 		actionTimeout: 10_000, // 10 seconds.
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',
-		video: 'on-first-retry',
+		video: 'on',
 	},
 	webServer: {
 		command: 'npm run wp-env start',

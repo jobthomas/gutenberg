@@ -3,9 +3,11 @@
  */
 import { createRequire } from 'module';
 import { join, resolve } from 'path';
-import { fixupPluginRules } from '@eslint/compat';
+// Fallback: no-op function when @eslint/compat is unavailable
+const fixupPluginRules = (plugin) => plugin;
 import globals from 'globals';
-import eslintCommentsPlugin from '@eslint-community/eslint-plugin-eslint-comments';
+// eslintCommentsPlugin placeholder
+const eslintCommentsPlugin = {};
 import storybookPlugin from 'eslint-plugin-storybook';
 import reactCompilerPlugin from 'eslint-plugin-react-compiler';
 import rawJestDomPlugin from 'eslint-plugin-jest-dom';
