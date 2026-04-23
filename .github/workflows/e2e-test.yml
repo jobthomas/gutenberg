@@ -47,20 +47,65 @@ jobs:
               # `wp-env-test` reads `.wp-env.test.json`, the CI‑ready config.
 
             # -----------------------------------------------------------------
-            # 5️⃣ Run the selected Playwright test (Chromium only)
+            # 5️⃣ Extract test info from PR description (if any)
+            # -----------------------------------------------------------------
+            - name: Extract test info from PR body
+              id: testinfo
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const body = context.payload.pull_request?.body || '';
+                      const pathMatch = body.match(/!Review[-_]E2E[-_]Test:\s*([^\s]+)/i);
+                      const nameMatch = body.match(/!Review[-_]E2E[-_]Test[-_]Name:\s*([^\n\r]+)/i);
+                      const testPath = pathMatch ? pathMatch[1].trim() : '';
+                      const testGrep = nameMatch ? nameMatch[1].trim() : '';
+                      core.setOutput('path', testPath);
+                      core.setOutput('grep', testGrep);
+
+            # -----------------------------------------------------------------
+            # 6️⃣ Resolve final test path (PR overrides input)
+            # -----------------------------------------------------------------
+            - name: Resolve test path
+              id: resolve
+              run: |
+                  TEST_PATH="${{ steps.testinfo.outputs.path }}"
+                  if [ -z "$TEST_PATH" ]; then
+                    TEST_PATH="${{ github.event.inputs.test-path }}"
+                  fi
+                  echo "test_path=$TEST_PATH" >> "$GITHUB_OUTPUT"
+              shell: bash
+
+            # -----------------------------------------------------------------
+            # 7️⃣ Resolve optional test‑name pattern
+            # -----------------------------------------------------------------
+            - name: Resolve test name pattern
+              id: resolve-name
+              run: |
+                  echo "test_grep=${{ steps.testinfo.outputs.grep }}" >> "$GITHUB_OUTPUT"
+              shell: bash
+
+            # -----------------------------------------------------------------
+            # 8️⃣ Run the selected Playwright test (Chromium only)
             # -----------------------------------------------------------------
             - name: Run Playwright test
               env:
                   PLAYWRIGHT_VIDEO: on # record video for every test
               run: |
-                  TEST_PATH="${{ github.event.inputs.test-path }}"
+                  TEST_PATH="${{ steps.resolve.outputs.test_path }}"
+                  TEST_GREP="${{ steps.resolve-name.outputs.test_grep }}"
 
-                  npx wp-scripts test-playwright \
+                  CMD=( npx wp-scripts test-playwright \
                     --config test/e2e/playwright.config.ts \
                     "$TEST_PATH" \
                     --project=chromium \
                     --reporter html \
-                    --output=playwright-report
+                    --output=playwright-report )
+
+                  if [ -n "$TEST_GREP" ]; then
+                    CMD+=( -g "$TEST_GREP" )
+                  fi
+
+                  "${CMD[@]}"
 
             # -----------------------------------------------------------------
             # 6️⃣ Upload all artifacts (videos, screenshots, traces, HTML report)
