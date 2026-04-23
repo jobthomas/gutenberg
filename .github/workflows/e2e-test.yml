@@ -183,9 +183,10 @@ jobs:
                       if ("${{ steps.check_path.outputs.exists }}" === 'false') {
                         status = '⚠️ _test file not found_';
                       }
-                      const workflowUrl = `${{ github.workflow_ref }}`;
-                      const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
-                      const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ${status}\u{0A}\u{0A}[View run details](${runUrl})\u{0A}\u{0A}${disclaimer}`;
+                       const workflowUrl = `${{ github.workflow_ref }}`;
+                       const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
+                       const guidance = `_🛈 To run a test, add a spec file under \`test/e2e/specs/\` or specify a glob/pattern in the PR description, e.g.:\n\n\`\`\`markdown\n!Review-E2E-Test: test/e2e/specs/editor/blocks/paragraph.spec.js\n!Review-E2E-Test-Name: should insert paragraph\n\`\`\``;
+                       const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ${status}\u{0A}\u{0A}${guidance}\u{0A}\u{0A}[View run details](${runUrl})\u{0A}\u{0A}${disclaimer}`;
                       await github.rest.issues.updateComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
