@@ -156,15 +156,15 @@ jobs:
                         body,
                       });
 
-            - name: Run Playwright test
+            - name: Run Playwright test (artifacts always on)
               if: steps.check_path.outputs.exists == 'true'
               env:
-                  PLAYWRIGHT_VIDEO: on # record video for every test
+                  PLAYWRIGHT_VIDEO: on
               run: |
                   TEST_PATH="${{ steps.resolve.outputs.test_path }}"
                   TEST_GREP="${{ steps.resolve-name.outputs.test_grep }}"
 
-                  CMD=( npm run test:e2e -- "$TEST_PATH" --project=chromium )
+                  CMD=( npm run test:e2e:artifacts -- "$TEST_PATH" --project=chromium )
                   if [ -n "$TEST_GREP" ]; then
                     CMD+=( -g "$TEST_GREP" )
                   fi
@@ -175,19 +175,19 @@ jobs:
               if: always()
               uses: actions/github-script@v7
               with:
-                script: |
-                  const runId = context.runId;
-                  const { data: { artifacts } } = await github.rest.actions.listWorkflowRunArtifacts({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    run_id: runId,
-                  });
-                  const artifact = artifacts.find(a => a.name === 'playwright-artifacts');
-                  if (artifact) {
-                    core.setOutput('url', artifact.archive_download_url);
-                  } else {
-                    core.info('Playwright artifact not found.');
-                  }
+                  script: |
+                      const runId = context.runId;
+                      const { data: { artifacts } } = await github.rest.actions.listWorkflowRunArtifacts({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        run_id: runId,
+                      });
+                      const artifact = artifacts.find(a => a.name === 'playwright-artifacts');
+                      if (artifact) {
+                        core.setOutput('url', artifact.archive_download_url);
+                      } else {
+                        core.info('Playwright artifact not found.');
+                      }
 
             # -----------------------------------------------------------------
             # 1️⃣1️⃣ Update comment on test success
