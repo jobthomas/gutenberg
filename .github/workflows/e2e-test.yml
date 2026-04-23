@@ -140,6 +140,22 @@ jobs:
             # -----------------------------------------------------------------
             # 🔟 Run the selected Playwright test (Chromium only) – only if file exists
             # -----------------------------------------------------------------
+            - name: Update comment to running
+              if: steps.check_path.outputs.exists == 'true'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+                      const workflowUrl = `${{ github.workflow_ref }}`;
+                      const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
+                      const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ⏳ _running…_\u{0A}\u{0A}[View run details](${runUrl})\u{0A}\u{0A}${disclaimer}`;
+                      await github.rest.issues.updateComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        comment_id: ${{ steps.comment.outputs.comment_id }},
+                        body,
+                      });
+
             - name: Run Playwright test
               if: steps.check_path.outputs.exists == 'true'
               env:
