@@ -47,7 +47,32 @@ jobs:
               # `wp-env-test` reads `.wp-env.test.json`, the CI‑ready config.
 
             # -----------------------------------------------------------------
-            # 5️⃣ Extract test info from PR description (if any)
+            # 5️⃣ Find or create a status comment on the PR (single comment)
+            # -----------------------------------------------------------------
+            - name: Find or create status comment
+              id: comment
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Look for an existing comment containing our marker
+                  EXISTING_ID=$(gh api /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments -q ".[] | select(.body | contains(\"<!-- e2e-test-comment:id -->\")) | .id" || echo '')
+                  if [ -n "$EXISTING_ID" ]; then
+                    echo "comment_id=$EXISTING_ID" >> $GITHUB_OUTPUT
+                    echo "Found existing comment ID $EXISTING_ID"
+                  else
+                    # Create a new comment
+                    gh api \
+                      -X POST \
+                      -H "Accept: application/vnd.github+json" \
+                      /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+                      -f body="<!-- e2e-test-comment:id -->\n**E2E Test:** _pending…_\n\n_Comment created by automated workflow._"
+                    # Capture the new comment ID
+                    NEW_ID=$(gh api /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments -q ".[-1].id")
+                    echo "comment_id=$NEW_ID" >> $GITHUB_OUTPUT
+                  fi
+
+            # -----------------------------------------------------------------
+            # 6️⃣ Extract test info from PR description (if any)
             # -----------------------------------------------------------------
             - name: Extract test info from PR body
               id: testinfo
@@ -63,7 +88,7 @@ jobs:
                       core.setOutput('grep', testGrep);
 
             # -----------------------------------------------------------------
-            # 6️⃣ Resolve final test path (PR overrides input)
+            # 7️⃣ Resolve final test path (PR overrides input)
             # -----------------------------------------------------------------
             - name: Resolve test path
               id: resolve
@@ -76,7 +101,20 @@ jobs:
               shell: bash
 
             # -----------------------------------------------------------------
-            # 7️⃣ Resolve optional test‑name pattern
+            # 8️⃣ Verify test file exists
+            # -----------------------------------------------------------------
+            - name: Check test file existence
+              id: check_path
+              run: |
+                  if [ -f "${{ steps.resolve.outputs.test_path }}" ]; then
+                    echo "exists=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+              shell: bash
+
+            # -----------------------------------------------------------------
+            # 9️⃣ Resolve optional test‑name pattern
             # -----------------------------------------------------------------
             - name: Resolve test name pattern
               id: resolve-name
@@ -85,9 +123,10 @@ jobs:
               shell: bash
 
             # -----------------------------------------------------------------
-            # 8️⃣ Run the selected Playwright test (Chromium only)
+            # 🔟 Run the selected Playwright test (Chromium only) – only if file exists
             # -----------------------------------------------------------------
             - name: Run Playwright test
+              if: steps.check_path.outputs.exists == 'true'
               env:
                   PLAYWRIGHT_VIDEO: on # record video for every test
               run: |
@@ -108,10 +147,46 @@ jobs:
                   "${CMD[@]}"
 
             # -----------------------------------------------------------------
-            # 6️⃣ Upload all artifacts (videos, screenshots, traces, HTML report)
+            # 1️⃣1️⃣ Update comment on test success
+            # -----------------------------------------------------------------
+            - name: Update comment on success
+              if: success()
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  NEW_BODY="<!-- e2e-test-comment:id -->\n**E2E Test:** ✅ _passed_\n\n[View artifacts]($RUN_URL)\n\n_Automated by the Playwright workflow._"
+                  gh api \
+                    -X PATCH \
+                    -H "Accept: application/vnd.github+json" \
+                    /repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }} \
+                    -f body="$NEW_BODY"
+
+            # -----------------------------------------------------------------
+            # 1️⃣2️⃣ Update comment on test failure (or missing file)
+            # -----------------------------------------------------------------
+            - name: Update comment on failure or missing file
+              if: failure() || steps.check_path.outputs.exists == 'false'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  STATUS="❌ _failed_"
+                  if [ "${{ steps.check_path.outputs.exists }}" == "false" ]; then
+                    STATUS="⚠️ _test file not found_"
+                  fi
+                  NEW_BODY="<!-- e2e-test-comment:id -->\n**E2E Test:** $STATUS\n\n[View run details]($RUN_URL)\n\n_Automated by the Playwright workflow._"
+                  gh api \
+                    -X PATCH \
+                    -H "Accept: application/vnd.github+json" \
+                    /repos/${{ github.repository }}/issues/comments/${{ steps.comment.outputs.comment_id }} \
+                    -f body="$NEW_BODY"
+
+            # -----------------------------------------------------------------
+            # 1️⃣3️⃣ Upload Playwright artifacts (always)
             # -----------------------------------------------------------------
             - name: Upload Playwright artifacts
-              if: always() # still upload when the test fails
+              if: always()
               uses: actions/upload-artifact@v4
               with:
                   name: playwright-artifacts
