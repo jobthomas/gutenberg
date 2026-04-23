@@ -63,11 +63,12 @@ jobs:
                       });
                       let comment = comments.find(c => c.body && c.body.includes(marker));
                       if (!comment) {
+                        const body = `${marker}\u{0A}**E2E Test:** _pending…_\u{0A}\u{0A}_Comment created by automated workflow._`;
                         const { data: created } = await github.rest.issues.createComment({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           issue_number: context.payload.pull_request.number,
-                          body: `${marker}\n**E2E Test:** _pending…_\n\n_Comment created by automated workflow._`,
+                          body,
                         });
                         comment = created;
                       }
@@ -157,7 +158,7 @@ jobs:
               with:
                   script: |
                       const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-                      const body = `<!-- e2e-test-comment:id -->\n**E2E Test:** ✅ _passed_\n\n[View artifacts](${runUrl})\n\n_Automated by the Playwright workflow._`;
+                      const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ✅ _passed_\u{0A}\u{0A}[View artifacts](${runUrl})\u{0A}\u{0A}_Automated by the Playwright workflow._`;
                       await github.rest.issues.updateComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -178,7 +179,7 @@ jobs:
                       if ("${{ steps.check_path.outputs.exists }}" === 'false') {
                         status = '⚠️ _test file not found_';
                       }
-                      const body = `<!-- e2e-test-comment:id -->\n**E2E Test:** ${status}\n\n[View run details](${runUrl})\n\n_Automated by the Playwright workflow._`;
+                      const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ${status}\u{0A}\u{0A}[View run details](${runUrl})\u{0A}\u{0A}_Automated by the Playwright workflow._`;
                       await github.rest.issues.updateComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
