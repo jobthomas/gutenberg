@@ -63,7 +63,7 @@ jobs:
                       });
                       let comment = comments.find(c => c.body && c.body.includes(marker));
                       if (!comment) {
-                        const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/e2e-test.yml`;
+                        const workflowUrl = `${{ github.server_url }}/${{ github.workflow_ref }}`;
                         const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
                         const body = `${marker}\u{0A}**E2E Test:** _pending…_\u{0A}\u{0A}${disclaimer}`;
                         const { data: created } = await github.rest.issues.createComment({
@@ -160,7 +160,7 @@ jobs:
               with:
                   script: |
                       const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-                      const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/e2e-test.yml`;
+                      const workflowUrl = `${{ github.server_url }}/${{ github.workflow_ref }}`;
                       const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
                       const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ✅ _passed_\u{0A}\u{0A}[View artifacts](${runUrl})\u{0A}\u{0A}${disclaimer}`;
                       await github.rest.issues.updateComment({
@@ -183,7 +183,7 @@ jobs:
                       if ("${{ steps.check_path.outputs.exists }}" === 'false') {
                         status = '⚠️ _test file not found_';
                       }
-                      const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/e2e-test.yml`;
+                      const workflowUrl = `${{ github.server_url }}/${{ github.workflow_ref }}`;
                       const disclaimer = `_This status comment is generated automatically by the [E2E test workflow](${workflowUrl})._`;
                       const body = `<!-- e2e-test-comment:id -->\u{0A}**E2E Test:** ${status}\u{0A}\u{0A}[View run details](${runUrl})\u{0A}\u{0A}${disclaimer}`;
                       await github.rest.issues.updateComment({
