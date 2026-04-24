@@ -1,0 +1,1 @@
+@layer wp-ui-utilities,wp-ui-components,wp-ui-compositions,wp-ui-overrides;@layer wp-ui-components{._wrapper_sahn2_4{--wp-ui-textarea-min-height: 40px}._textarea_sahn2_8{min-height:calc(var(--wp-ui-textarea-min-height) - 2px);resize:block}}@layer wp-ui-compositions{._wrapper_sahn2_4{--wp-ui-input-padding-block: 9.9px;height:auto;line-height:1.4}}
